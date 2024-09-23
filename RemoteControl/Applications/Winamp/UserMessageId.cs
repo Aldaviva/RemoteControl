@@ -1,0 +1,33 @@
+﻿namespace RemoteControl.Applications.Winamp;
+
+public enum UserMessageId: uint {
+
+    GET_VERSION = 0,
+    PLAY        = 100,
+    CLEAR_PLAYLIST,
+    PLAY_SELECTED_TRACK,
+    CHANGE_DIRECTORY,
+    GET_PLAYBACK_STATE,
+    GET_PLAYBACK_POSITION_TIME,
+    SEEK_TO_ABSOLUTE_MS,
+    WRITE_PLAYLIST_FILE = 120,
+    SET_PLAYLIST_ACTIVE_TRACK,
+    SET_VOLUME,
+    SET_PANNING,
+    GET_PLAYLIST_TRACK_COUNT,
+    GET_PLAYLIST_ACTIVE_TRACK,
+    GET_TRACK_DATA,
+    GET_EQUALIZER_DATA,
+    SET_EQUALIZER_AUTOLOAD,
+    ADD_BOOKMARK,
+    RESTART_WINAMP
+
+}
+
+public enum PlaybackState: uint {
+
+    STOPPED,
+    PLAYING,
+    PAUSED = 3
+
+}

@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
+        <UseWindowsForms>true</UseWindowsForms>
+        <Version>0.0.0</Version>
+        <Authors>Ben Hutchison</Authors>
+        <Copyright>© 2024 $(Authors)</Copyright>
+        <Company>$(Authors)</Company>
+        <NoWarn>$(NoWarn);8524</NoWarn>
+        <RollForward>latestMajor</RollForward>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <ApplicationIcon>rc052sr.ico</ApplicationIcon>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="ExceptionAdjustments.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="rc052sr.ico" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MouseKeyHook" Version="5.7.1" />
+        <PackageReference Include="mwinapi" Version="0.3.0.5" />
+        <PackageReference Include="SimWinMouse" Version="1.0.2" />
+        <PackageReference Include="UriBuilder.Fluent" Version="3.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Unfucked">
+            <HintPath>..\..\Unfucked\Unfucked\bin\Debug\net8.0\Unfucked.dll</HintPath>
+        </Reference>
+        <Reference Include="Unfucked.DI">
+            <HintPath>..\..\Unfucked\DI\bin\Debug\net6.0\Unfucked.DI.dll</HintPath>
+        </Reference>
+        <Reference Include="Unfucked.Windows">
+            <HintPath>..\..\Unfucked\Windows\bin\Debug\net6.0-windows\Unfucked.Windows.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net8.0-windows7.0": {
+      "MouseKeyHook": {
+        "type": "Direct",
+        "requested": "[5.7.1, )",
+        "resolved": "5.7.1",
+        "contentHash": "c0VhB6cbcOpMOcoCQmvPMVqxaH76S4IPHwpbCIY7XKUNimdj9+81rX+Evnu5O53xYgUvdD7g0qmlVeZP2wGCnA=="
+      },
+      "mwinapi": {
+        "type": "Direct",
+        "requested": "[0.3.0.5, )",
+        "resolved": "0.3.0.5",
+        "contentHash": "jb1ox29TMcxe0klNF5yui+ehXHUdEZOuykYaoGI9Okt0s7K5bNWxOzqsng0VVVvvFnW9wNfS4hWYOsE9Xup0GQ==",
+        "dependencies": {
+          "System.Management": "6.0.0"
+        }
+      },
+      "SimWinMouse": {
+        "type": "Direct",
+        "requested": "[1.0.2, )",
+        "resolved": "1.0.2",
+        "contentHash": "uG0VbsJyjJkFnAt979yEWGxe5i0YaCyCjAlpLTn7lTbMaVYm0EqVgz6KlCa+nAmtA9qAw2KaXfn21OHChJdXFw=="
+      },
+      "UriBuilder.Fluent": {
+        "type": "Direct",
+        "requested": "[3.0.0, )",
+        "resolved": "3.0.0",
+        "contentHash": "L/j56+flvXqYkJfcv+EqAZ+q1f/1BSYwPSKQ1KW0/2KnEJk2SIVjfx77ilZzT1DDYK561AJ0A17QUE+gp0CGfQ=="
+      },
+      "System.CodeDom": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "CPc6tWO1LAer3IzfZufDBRL+UZQcj5uS207NHALQzP84Vp/z6wF0Aa0YZImOQY8iStY0A2zI/e3ihKNPfUm8XA=="
+      },
+      "System.Management": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "sHsESYMmPDhQuOC66h6AEOs/XowzKsbT9srMbX71TCXP58hkpn1BqBjdmKj1+DCA/WlBETX1K5WjQHwmV0Txrg==",
+        "dependencies": {
+          "System.CodeDom": "6.0.0"
+        }
+      }
+    },
+    "net8.0-windows7.0/win-x64": {
+      "System.Management": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "sHsESYMmPDhQuOC66h6AEOs/XowzKsbT9srMbX71TCXP58hkpn1BqBjdmKj1+DCA/WlBETX1K5WjQHwmV0Txrg==",
+        "dependencies": {
+          "System.CodeDom": "6.0.0"
+        }
+      }
+    }
+  }
+}
