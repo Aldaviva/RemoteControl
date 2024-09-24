@@ -18,6 +18,8 @@ public interface WebSocketDispatcher: IDisposable, IAsyncDisposable {
     ulong nextRequestId { get; }
 
     /// <exception cref="NoBrowserConnected">if the browser isn't running, the extension isn't installed, or its WebSocket connection dropped</exception>
+    /// <exception cref="BrowserExtensionException">or one of its subclasses if the browser extension returned an exception response</exception>
+    /// <exception cref="UnmappedBrowserExtensionException">if the browser extension returned a response where <c>exception</c> does not have the same name as any subclasses of <see cref="BrowserExtensionException"/> in the same namespace</exception>
     Task<RESPONSE> sendCommandToMostRecentActiveConnection<RESPONSE>(BrowserCommand<RESPONSE> command) where RESPONSE: BrowserResponse;
 
 }
@@ -87,7 +89,16 @@ public class WebSocketStackDispatcher(ILogger<WebSocketStackDispatcher> logger):
                 BrowserResponse    browserResponse = jsonDocument.Deserialize<BrowserResponse>()!;
 
                 if (outstandingRequests.Remove(browserResponse.requestId, out IOutstandingRequest<BrowserResponse>? request)) {
-                    request.onComplete.TrySetResult((BrowserResponse) jsonDocument.Deserialize(request.responseType, JSON_SERIALIZER_OPTIONS)!);
+                    if (browserResponse.exception == null) {
+                        request.onComplete.SetResult((BrowserResponse) jsonDocument.Deserialize(request.responseType, JSON_SERIALIZER_OPTIONS)!);
+                    } else {
+                        Type  exceptionSuperclass = typeof(BrowserExtensionException);
+                        Type? exceptionClass      = exceptionSuperclass.Assembly.GetType($"{exceptionSuperclass.Namespace}.{browserResponse.exception}");
+                        BrowserExtensionException exception = exceptionClass is not null && exceptionClass.IsAssignableTo(exceptionSuperclass)
+                            ? (BrowserExtensionException) jsonDocument.Deserialize(exceptionClass, JSON_SERIALIZER_OPTIONS)!
+                            : new UnmappedBrowserExtensionException(browserResponse.exception!, jsonDocument);
+                        request.onComplete.SetException(exception);
+                    }
                 } else {
                     logger.LogWarning("No outstanding request found for id {reqId}, ignoring incoming message {msg}", browserResponse.requestId, jsonDocument);
                 }

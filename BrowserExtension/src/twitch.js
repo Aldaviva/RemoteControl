@@ -2,7 +2,11 @@ console.log("Starting twitch.js");
 
 class TwitchHandler extends AbstractSiteHandler {
 
-	get #findPlayButton() {
+	get websiteName() {
+		return "TWITCH";
+	}
+
+	get #playButton() {
 		return document.querySelectorAll(".video-player__default-player button[data-a-target='player-play-pause-button']");
 	}
 
@@ -11,7 +15,7 @@ class TwitchHandler extends AbstractSiteHandler {
 	}
 
 	fetchPlaybackState() {
-		const playButton = this.#findPlayButton;
+		const playButton = this.#playButton;
 		return {
 			isPlaying: playButton.dataset.aPlayerState === "playing",
 			canPlay: !!playButton
@@ -19,7 +23,7 @@ class TwitchHandler extends AbstractSiteHandler {
 	}
 
 	pressButton(button) {
-		const playButton = this.#findPlayButton;
+		const playButton = this.#playButton;
 		if (playButton) {
 			switch (button) {
 				case "PLAY_PAUSE":
@@ -53,8 +57,6 @@ class TwitchHandler extends AbstractSiteHandler {
 					break;
 			}
 		}
-
-		return "TWITCH";
 	}
 
 }

@@ -12,8 +12,7 @@ class AbstractSiteHandler {
 		console.debug("Received message from service worker", request, sender);
 
 		let response = {
-			requestId: request.requestId,
-			result: null
+			exception: null
 		};
 
 		switch (request.name) {
@@ -21,10 +20,12 @@ class AbstractSiteHandler {
 				response.playbackState = this.fetchPlaybackState();
 				break;
 			case "PressButton":
-				response.website = this.pressButton(request.button);
+				this.pressButton(request.button);
+				response.website = this.websiteName;
 				break;
 			default:
-				console.warn(`Unknown command from server: ${request.name}`);
+				response.exception = "UnsupportedCommand";
+				response.name = request.name;
 				break;
 		}
 
@@ -37,6 +38,10 @@ class AbstractSiteHandler {
 
 	pressButton(button) {
 		console.error("pressButton unimplemented");
+	}
+
+	get websiteName() {
+		return null;
 	}
 
 }

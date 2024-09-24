@@ -12,12 +12,14 @@ public abstract class BrowserCommand<RESPONSE> where RESPONSE: BrowserResponse {
 public interface BrowserResponse {
 
     internal ulong requestId { get; init; }
+    internal string? exception { get; init; }
 
 }
 
 public class BaseResponse: BrowserResponse {
 
     public ulong requestId { get; init; }
+    public string? exception { get; init; }
 
 }
 

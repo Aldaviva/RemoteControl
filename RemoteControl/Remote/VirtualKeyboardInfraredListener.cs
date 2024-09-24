@@ -46,15 +46,16 @@ public class VirtualKeyboardInfraredListener(ILogger<VirtualKeyboardInfraredList
         }
     }
 
-    private async Task<ControllableApplication?> getTargetApplication() =>
-        (await Task.WhenAll(allApplications.Select(async app => (app, playbackState: await app.fetchPlaybackState(), app.isFocused, app.isRunning))))
-        .Where(app => app.isRunning)
-        .OrderByDescending(app => app.playbackState.isPlaying)
-        .ThenByDescending(app => app.isFocused)
-        .ThenByDescending(app => app.playbackState.canPlay)
-        .ThenBy(app => app.app.priority)
-        .Select(app => app.app)
-        .FirstOrDefault();
+    // ReSharper disable once MergeIntoPattern - variable must be used even if the subsequent check fails, so it can't be in a pattern because the variable scope is too small
+    private async Task<ControllableApplication?> getTargetApplication() => allApplications
+        .Where(app => app.isRunning).ToList() is var runningApplications && runningApplications.Count <= 1 ? runningApplications.SingleOrDefault()
+        : (await Task.WhenAll(runningApplications.Select(async app => (app, playbackState: await app.fetchPlaybackState()))))
+        .OrderByDescending(appWithState => appWithState.playbackState.isPlaying)
+        .ThenByDescending(appWithState => appWithState.app.isFocused)
+        .ThenByDescending(appWithState => appWithState.playbackState.canPlay)
+        .ThenBy(appWithState => appWithState.app.priority)
+        .First()
+        .app;
 
     /// <inheritdoc />
     public void Dispose() {

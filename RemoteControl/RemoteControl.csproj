@@ -11,7 +11,7 @@
         <Authors>Ben Hutchison</Authors>
         <Copyright>© 2024 $(Authors)</Copyright>
         <Company>$(Authors)</Company>
-        <NoWarn>$(NoWarn);8524</NoWarn>
+        <NoWarn>$(NoWarn);8524;NU1701</NoWarn>
         <RollForward>latestMajor</RollForward>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

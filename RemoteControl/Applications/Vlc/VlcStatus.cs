@@ -26,10 +26,10 @@ public class VideoEffects {
 public class StreamInformation {
 
     [XmlAttribute(AttributeName = "name")]
-    public string key { get; set; }
+    public required string key { get; set; }
 
     [XmlText]
-    public string value { get; set; }
+    public required string value { get; set; }
 
 }
 
@@ -37,10 +37,10 @@ public class StreamInformation {
 public class StreamInformationCategory {
 
     [XmlElement(ElementName = "info")]
-    public List<StreamInformation> information { get; set; }
+    public required List<StreamInformation> information { get; set; }
 
     [XmlAttribute(AttributeName = "name")]
-    public string categoryName { get; set; }
+    public required string categoryName { get; set; }
     //
     // [XmlText]
     // public string text { get; set; }
@@ -51,7 +51,7 @@ public class StreamInformationCategory {
 public class Information {
 
     [XmlElement(ElementName = "category")]
-    public List<StreamInformationCategory> categories { get; set; }
+    public required List<StreamInformationCategory> categories { get; set; }
 
 }
 
@@ -127,7 +127,7 @@ public class VlcStatus {
     /// One of <c>default</c>, <c>16:9</c>, <c>4:3</c>, <c>1:1</c>, <c>16:10</c>, <c>221:100</c>, <c>235:100</c>, <c>239:100</c>, and <c>5:4</c>.
     /// </summary>
     [XmlElement(ElementName = "aspectratio")]
-    public string aspectRatio { get; set; }
+    public required string aspectRatio { get; set; }
 
     /// <summary>
     /// The duration of the "short jump length" in the VLC preferences, in seconds.
@@ -167,7 +167,7 @@ public class VlcStatus {
     public double rate { get; set; }
 
     [XmlElement(ElementName = "videoeffects")]
-    public VideoEffects videoEffects { get; set; }
+    public required VideoEffects videoEffects { get; set; }
 
     /// <summary>
     /// Whether the media is playing, paused, or stopped
@@ -179,7 +179,7 @@ public class VlcStatus {
     public bool loop { get; set; }
 
     [XmlElement(ElementName = "version")]
-    public string vlcVersion { get; set; }
+    public required string vlcVersion { get; set; }
 
     /// <summary>
     /// <para>Current playback time as a percentage of the total <see cref="length"/>, in the range [0.0, 1.0].</para>
@@ -201,10 +201,10 @@ public class VlcStatus {
     // public object equalizer { get; set; }
 
     [XmlElement(ElementName = "information")]
-    public Information information { get; set; }
+    public required Information information { get; set; }
 
     [XmlElement(ElementName = "stats")]
-    public Statistics statistics { get; set; }
+    public required Statistics statistics { get; set; }
 
 }
 

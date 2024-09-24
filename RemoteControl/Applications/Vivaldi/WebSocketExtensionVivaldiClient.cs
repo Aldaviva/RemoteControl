@@ -17,8 +17,12 @@ public class WebSocketExtensionVivaldiClient(WebSocketDispatcher webSocketDispat
             return (await webSocketDispatcher.sendCommandToMostRecentActiveConnection(new FetchPlaybackState())).playbackState;
         } catch (NoBrowserConnected e) {
             logger.LogWarning(e, "No extension connected while fetching playback state from Vivaldi");
-            return new PlaybackState(false, false);
+        } catch (UnsupportedWebsite e) {
+            logger.LogInformation("Browser extension does not support fetching the playback state from {url}", e.url);
+        } catch (BrowserExtensionException e) {
+            onBrowserExtensionException(e);
         }
+        return new PlaybackState(false, false);
     }
 
     public override async Task sendButtonPress(RemoteControlButton button) {
@@ -35,6 +39,22 @@ public class WebSocketExtensionVivaldiClient(WebSocketDispatcher webSocketDispat
             }
         } catch (NoBrowserConnected e) {
             logger.LogWarning(e, "No extension connected while sending {button} button press to Vivaldi", button);
+        } catch (UnsupportedWebsite e) {
+            logger.LogInformation("Browser extension does not support pressing the {button} button on {url}", button, e.url);
+        } catch (BrowserExtensionException e) {
+            onBrowserExtensionException(e);
+        }
+    }
+
+    private void onBrowserExtensionException(BrowserExtensionException ex) {
+        try {
+            throw ex;
+        } catch (UnsupportedCommand e) {
+            logger.LogError("Browser extension is too old to support the {cmd} command, please update it", e.name);
+        } catch (UnmappedBrowserExtensionException e) {
+            logger.LogError(e, "Browser extension returned an exception that does not map to any subclasses of {superclass}", nameof(BrowserExtensionException));
+        } catch (BrowserExtensionException e) {
+            logger.LogError(e, "Browser extension returned a {exName} exception not handled by this method", e.GetType().Name);
         }
     }
 

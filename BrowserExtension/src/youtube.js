@@ -2,12 +2,16 @@ console.log("Starting youtube.js");
 
 class YouTubeHandler extends AbstractSiteHandler {
 
-	get #findPlayer() {
+	get websiteName() {
+		return "YOUTUBE";
+	}
+
+	get #player() {
 		return document.querySelector("ytd-player.ytd-watch-flexy")?.player_;
 	}
 
 	fetchPlaybackState() {
-		const playerStateObject = this.#findPlayer?.getPlayerStateObject();
+		const playerStateObject = this.#player?.getPlayerStateObject();
 		return {
 			isPlaying: playerStateObject?.isOrWillBePlaying ?? false,
 			canPlay: (playerStateObject?.isOrWillBePlaying || playerStateObject?.isPaused) ?? false
@@ -15,7 +19,7 @@ class YouTubeHandler extends AbstractSiteHandler {
 	}
 
 	pressButton(button) {
-		const player = this.#findPlayer;
+		const player = this.#player;
 		if (player) {
 			switch (button) {
 				case "PLAY_PAUSE":
@@ -46,8 +50,6 @@ class YouTubeHandler extends AbstractSiteHandler {
 					break;
 			}
 		}
-
-		return "YOUTUBE";
 	}
 
 }
