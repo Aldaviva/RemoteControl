@@ -39,12 +39,12 @@ class YouTubeHandler extends AbstractSiteHandler {
 					player.pauseVideo();
 					break;
 				case "BAND":
+					// unbound
+					break;
+				case "MEMORY":
 					// player.toggleFullscreen();
 					document.activeElement?.blur();
 					// server will then send an "F" keystroke to Vivaldi, putting the video in fullscreen, since it requires an authentic mouse or keyboard input, and not a synthetic click like our extension can create
-					break;
-				case "MEMORY":
-					// unbound
 					break;
 				default:
 					break;

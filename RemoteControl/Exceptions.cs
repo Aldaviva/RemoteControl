@@ -13,8 +13,8 @@ public abstract class BrowserExtensionException(string message): RemoteException
 
 }
 
-public sealed class UnmappedBrowserExtensionException(string name, JsonDocument responseBody, [CallerFilePath] string exceptionSourceFile = "RemoteControl\\Exceptions.cs")
-    : BrowserExtensionException($"Unmapped exception {name} from browser extension, please add a class for this in {exceptionSourceFile}.") {
+public sealed class UnmappedBrowserExtensionException(string name, JsonDocument responseBody, [CallerFilePath] string exceptionsSourceFile = $"{nameof(RemoteControl)}\\Exceptions.cs")
+    : BrowserExtensionException($"Unmapped exception {name} from browser extension, please add 'public class {name}: {nameof(BrowserExtensionException)};' in {exceptionsSourceFile}.") {
 
     public JsonDocument responseBody { get; } = responseBody;
 

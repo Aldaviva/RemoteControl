@@ -18,6 +18,10 @@ public interface Vlc: ControllableApplication;
  * 4. Restart VLC twice, allowing the inbound firewall rules both times (it asks for different NAT traversal rules the second time, causing a second prompt)
  *
  * To change the VLC listening port from 8080, try https://superuser.com/a/1549408/339084
+ *
+ * Documentation: https://code.videolan.org/videolan/vlc/-/blob/master/share/lua/http/requests/README.txt
+ * Source:        https://code.videolan.org/videolan/vlc/-/blob/master/share/lua/http/requests/status.xml
+ *                https://code.videolan.org/videolan/vlc/-/blob/master/share/lua/intf/modules/httprequests.lua
  */
 public class XmlHttpVlcClient: AbstractControllableApplication, Vlc {
 
@@ -28,61 +32,56 @@ public class XmlHttpVlcClient: AbstractControllableApplication, Vlc {
     private readonly SingletonAsyncCache<VlcStatus?>      statusCache;
     private readonly SingletonAsyncCache<XPathNavigator?> playlistCache;
 
+    protected override string windowClassName { get; } = "Qt5QWindowIcon";
+    protected override string? processBaseName { get; } = "vlc";
+    public override int priority { get; } = 1;
+    public override string name { get; } = "VLC";
+
     public XmlHttpVlcClient(HttpClient httpClient, IOptions<VlcConfiguration> config) {
         this.httpClient = httpClient;
         this.config     = config;
 
         Uri baseUri = new UriBuilder("http", "localhost", config.Value.port, "/requests/").Uri;
-        statusUrl   = new Uri(baseUri, "status.xml");
-        playlistUrl = new Uri(baseUri, "playlist_jstree.xml");
-
+        statusUrl     = new Uri(baseUri, "status.xml");
+        playlistUrl   = new Uri(baseUri, "playlist.xml");
         statusCache   = new SingletonAsyncCache<VlcStatus?>(async () => await fetchStatus(), CACHE_DURATION);
         playlistCache = new SingletonAsyncCache<XPathNavigator?>(async () => await fetchPlaylist(), CACHE_DURATION);
     }
 
-    protected override string windowClassName { get; } = "Qt5QWindowIcon";
-
-    protected override string? processBaseName { get; } = "vlc";
-
-    public override int priority { get; } = 1;
-
-    public override string name { get; } = "VLC";
-
-    public override async Task<Applications.PlaybackState> fetchPlaybackState() {
+    public override async Task<PlaybackState> fetchPlaybackState() {
         Task<VlcStatus?>      status   = statusCache.value();
         Task<XPathNavigator?> playlist = playlistCache.value();
-        return new Applications.PlaybackState(
-            isPlaying: await status is { state: PlaybackState.PLAYING },
-            canPlay: (await playlist)?.SelectSingleNode("/root/item/item[@name='Playlist']/item") != null);
+        return new PlaybackState(
+            isPlaying: await status is { playbackState: VlcPlaybackState.PLAYING or VlcPlaybackState.STARTED },
+            canPlay: (await playlist)?.SelectSingleNode("/node/node[@name='Playlist']/leaf") != null);
     }
 
     public override async Task sendButtonPress(RemoteControlButton button) {
         VlcStatus? status;
         switch (button) {
             case RemoteControlButton.PLAY_PAUSE:
-                status = await statusCache.value();
-                await sendCommand(status is { state: PlaybackState.STOPPED } ? "pl_play" : "pl_pause");
+                await sendCommand("pl_pause");
                 break;
             case RemoteControlButton.PREVIOUS_TRACK:
                 status = await statusCache.value();
-                if (status is { state: not PlaybackState.STOPPED }) {
-                    await seek(false);
-                } else {
+                if (status is { playbackState: VlcPlaybackState.STOPPED or VlcPlaybackState.STOPPING }) {
                     await sendCommand("pl_previous");
+                } else {
+                    await seek(false);
                 }
                 break;
             case RemoteControlButton.NEXT_TRACK:
                 status = await statusCache.value();
-                if (status is { state: not PlaybackState.STOPPED }) {
-                    await seek(true);
-                } else {
+                if (status is { playbackState: VlcPlaybackState.STOPPED or VlcPlaybackState.STOPPING }) {
                     await sendCommand("pl_next");
+                } else {
+                    await seek(true);
                 }
                 break;
             case RemoteControlButton.STOP:
                 await sendCommand("pl_stop");
                 break;
-            case RemoteControlButton.BAND:
+            case RemoteControlButton.MEMORY:
                 await sendCommand("fullscreen");
                 break;
             default:
@@ -90,18 +89,8 @@ public class XmlHttpVlcClient: AbstractControllableApplication, Vlc {
         }
     }
 
-    /*
-     * Seeking by percentage is better than seeking to a whole number of seconds because, even though the floating-point accuracy may not be perfect,
-     * it's isomorphic (seeking forwards then backwards will put you in the original position, not the nearest second boundary)
-     * and allows floating-point seeking durations (like 5.5 seconds).
-     */
     private async Task seek(bool forwards) {
-        if (await statusCache.value() is { } status) {
-            int    durationMs  = status.length * 1000;
-            double oldPosition = status.position * durationMs;
-            double newPosition = Math.Min(1, Math.Max(0, (oldPosition + (forwards ? 1 : -1) * (int) config.Value.jumpDurationMs) / durationMs));
-            await sendCommand("seek", new Dictionary<string, string> { { "val", $"{newPosition:F15}%" } });
-        }
+        await sendCommand("seek", "val", $"{(forwards ? '+' : '-')}{config.Value.jumpDurationSec:D}s");
     }
 
     private async Task<VlcStatus?> fetchStatus() {
@@ -120,6 +109,10 @@ public class XmlHttpVlcClient: AbstractControllableApplication, Vlc {
             }
         } catch (TaskCanceledException) { } catch (HttpRequestException) { }
         return null;
+    }
+
+    private Task sendCommand(string command, string parameterName, string parameterValue) {
+        return sendCommand(command, [new KeyValuePair<string, string>(parameterName, parameterValue)]);
     }
 
     private async Task sendCommand(string command, IEnumerable<KeyValuePair<string, string>>? parameters = null) {

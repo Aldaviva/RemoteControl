@@ -47,11 +47,11 @@ class TwitchHandler extends AbstractSiteHandler {
 					}
 					break;
 				case "BAND":
-					document.activeElement?.blur();
-					// server will then send an "F" keystroke to Vivaldi, putting the video in fullscreen, since it requires an authentic mouse or keyboard input, and not a synthetic click like our extension can create
+					// unbound
 					break;
 				case "MEMORY":
-					// unbound
+					document.activeElement?.blur();
+					// server will then send an "F" keystroke to Vivaldi, putting the video in fullscreen, since it requires an authentic mouse or keyboard input, and not a synthetic click like our extension can create
 					break;
 				default:
 					break;

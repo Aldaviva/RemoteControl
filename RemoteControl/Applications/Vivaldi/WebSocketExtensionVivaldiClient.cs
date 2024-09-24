@@ -15,12 +15,12 @@ public class WebSocketExtensionVivaldiClient(WebSocketDispatcher webSocketDispat
     public override async Task<PlaybackState> fetchPlaybackState() {
         try {
             return (await webSocketDispatcher.sendCommandToMostRecentActiveConnection(new FetchPlaybackState())).playbackState;
-        } catch (NoBrowserConnected e) {
-            logger.LogWarning(e, "No extension connected while fetching playback state from Vivaldi");
         } catch (UnsupportedWebsite e) {
             logger.LogInformation("Browser extension does not support fetching the playback state from {url}", e.url);
+        } catch (NoBrowserConnected e) {
+            logger.LogWarning(e, "No extension connected while fetching playback state from Vivaldi");
         } catch (BrowserExtensionException e) {
-            onBrowserExtensionException(e);
+            handleBrowserExtensionException(e);
         }
         return new PlaybackState(false, false);
     }
@@ -29,7 +29,7 @@ public class WebSocketExtensionVivaldiClient(WebSocketDispatcher webSocketDispat
         try {
             Website website = (await webSocketDispatcher.sendCommandToMostRecentActiveConnection(new PressButton(button))).website;
 
-            if (button == RemoteControlButton.BAND && isFocused) {
+            if (button == RemoteControlButton.MEMORY && isFocused) {
                 Keys? fullscreenKey = website is Website.YOUTUBE or Website.TWITCH or Website.CBC or Website.VIMEO ? Keys.F : null;
 
                 if (fullscreenKey != null) {
@@ -37,16 +37,16 @@ public class WebSocketExtensionVivaldiClient(WebSocketDispatcher webSocketDispat
                     SimKeyboard.Press((byte) fullscreenKey);
                 }
             }
-        } catch (NoBrowserConnected e) {
-            logger.LogWarning(e, "No extension connected while sending {button} button press to Vivaldi", button);
         } catch (UnsupportedWebsite e) {
             logger.LogInformation("Browser extension does not support pressing the {button} button on {url}", button, e.url);
+        } catch (NoBrowserConnected e) {
+            logger.LogWarning(e, "No extension connected while sending {button} button press to Vivaldi", button);
         } catch (BrowserExtensionException e) {
-            onBrowserExtensionException(e);
+            handleBrowserExtensionException(e);
         }
     }
 
-    private void onBrowserExtensionException(BrowserExtensionException ex) {
+    private void handleBrowserExtensionException(BrowserExtensionException ex) {
         try {
             throw ex;
         } catch (UnsupportedCommand e) {

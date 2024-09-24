@@ -2,7 +2,7 @@
 
 namespace RemoteControl.Applications.Vlc;
 
-[XmlRoot(ElementName = "videoeffects")]
+/*[XmlRoot(ElementName = "videoeffects")]
 public class VideoEffects {
 
     [XmlElement(ElementName = "hue")]
@@ -115,103 +115,121 @@ public class Statistics {
     [XmlElement(ElementName = "decodedaudio")]
     public long decodedaudio { get; set; }
 
-}
+}*/
 
 [XmlRoot(ElementName = "root")]
-public class VlcStatus {
+public readonly struct VlcStatus {
 
     [XmlElement(ElementName = "fullscreen")]
-    public bool fullscreen { get; set; }
+    public bool fullscreen { get; init; }
 
-    /// <summary>
+    /*/// <summary>
     /// One of <c>default</c>, <c>16:9</c>, <c>4:3</c>, <c>1:1</c>, <c>16:10</c>, <c>221:100</c>, <c>235:100</c>, <c>239:100</c>, and <c>5:4</c>.
     /// </summary>
     [XmlElement(ElementName = "aspectratio")]
-    public required string aspectRatio { get; set; }
+    public required string aspectRatio { get; set; }*/
 
-    /// <summary>
+    /*/// <summary>
     /// The duration of the "short jump length" in the VLC preferences, in seconds.
     /// </summary>
     [XmlElement(ElementName = "seek_sec")]
-    public int seekDurationSec { get; set; }
+    public int seekDurationSec { get; set; }*/
 
     [XmlElement(ElementName = "apiversion")]
-    public int apiVersion { get; set; }
+    public int apiVersion { get; init; }
 
-    [XmlElement(ElementName = "currentplid")]
-    public int currentPlaylistId { get; set; }
+    /*[XmlElement(ElementName = "currentplid")]
+    public int currentPlaylistId { get; set; }*/
 
     /// <summary>
-    /// <para>Current playback time, in seconds, in the range [0, <see cref="length"/>].</para>
-    /// <para>For the percentage-based equivalent that is more precise than 1 second, see <see cref="position"/>.</para>
+    /// <para>Current playback time, in seconds, in the range [0, <see cref="lengthSec"/>].</para>
+    /// <para>For the percentage-based equivalent that is more precise than 1 second, see <see cref="positionPercent"/>.</para>
     /// </summary>
     [XmlElement(ElementName = "time")]
-    public int time { get; set; }
+    public int positionSec { get; init; }
 
-    [XmlElement(ElementName = "volume")]
-    public byte volume { get; set; }
+    /*[XmlElement(ElementName = "volume")]
+    public byte volume { get; set; }*/
 
     /// <summary>
     /// Total duration of the media, in seconds
     /// </summary>
     [XmlElement(ElementName = "length")]
-    public int length { get; set; }
+    public int lengthSec { get; init; }
 
-    [XmlElement(ElementName = "random")]
-    public bool shuffle { get; set; }
+    /*[XmlElement(ElementName = "random")]
+    public bool shuffle { get; set; }*/
 
     // [XmlElement(ElementName = "audiofilters")]
     // public audiofilters audiofilters { get; set; }
 
-    [XmlElement(ElementName = "rate")]
+    /*[XmlElement(ElementName = "rate")]
     public double rate { get; set; }
 
     [XmlElement(ElementName = "videoeffects")]
-    public required VideoEffects videoEffects { get; set; }
+    public required VideoEffects videoEffects { get; set; }*/
 
     /// <summary>
     /// Whether the media is playing, paused, or stopped
     /// </summary>
     [XmlElement(ElementName = "state")]
-    public PlaybackState state { get; set; }
+    public VlcPlaybackState playbackState { get; init; }
 
-    [XmlElement(ElementName = "loop")]
-    public bool loop { get; set; }
+    /*[XmlElement(ElementName = "loop")]
+    public bool loop { get; set; }*/
 
     [XmlElement(ElementName = "version")]
-    public required string vlcVersion { get; set; }
+    public required string vlcVersion { get; init; }
 
     /// <summary>
-    /// <para>Current playback time as a percentage of the total <see cref="length"/>, in the range [0.0, 1.0].</para>
-    /// <para>For the number of whole seconds, see <see cref="time"/>.</para>
+    /// <para>Current playback time as a percentage of the total <see cref="lengthSec"/>, in the range [0.0, 1.0].</para>
+    /// <para>For the number of whole seconds, see <see cref="positionSec"/>.</para>
     /// </summary>
     [XmlElement(ElementName = "position")]
-    public double position { get; set; }
+    public double positionPercent { get; init; }
 
-    [XmlElement(ElementName = "audiodelay")]
+    /*[XmlElement(ElementName = "audiodelay")]
     public double audioDelay { get; set; }
 
     [XmlElement(ElementName = "repeat")]
     public bool repeat { get; set; }
 
     [XmlElement(ElementName = "subtitledelay")]
-    public double subtitleDelay { get; set; }
+    public double subtitleDelay { get; set; }*/
 
     // [XmlElement(ElementName = "equalizer")]
     // public object equalizer { get; set; }
 
-    [XmlElement(ElementName = "information")]
+    /*[XmlElement(ElementName = "information")]
     public required Information information { get; set; }
 
     [XmlElement(ElementName = "stats")]
-    public required Statistics statistics { get; set; }
+    public required Statistics statistics { get; set; }*/
 
 }
 
-public enum PlaybackState {
+/*
+ * Source: https://code.videolan.org/videolan/vlc/-/blob/7df26860bbae7a6e2c41a3d8aacd0fff346e5123/include/vlc_player.h#L191
+ */
+public enum VlcPlaybackState {
 
+    UNKNOWN,
     STOPPED,
+
+    /// <summary>
+    /// Buffering, attempting to start. Not actually playing, but transitioning to <see cref="PLAYING"/>.
+    /// </summary>
+    STARTED,
+
+    /// <summary>
+    /// Media is actually playing
+    /// </summary>
+    PLAYING,
     PAUSED,
-    PLAYING
+
+    /// <summary>
+    /// Transitioning to <see cref="STOPPED"/>
+    /// </summary>
+    STOPPING
 
 }
