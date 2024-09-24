@@ -17,11 +17,11 @@
           "System.Management": "6.0.0"
         }
       },
-      "SimWinMouse": {
+      "SimWinKeyboard": {
         "type": "Direct",
         "requested": "[1.0.2, )",
         "resolved": "1.0.2",
-        "contentHash": "uG0VbsJyjJkFnAt979yEWGxe5i0YaCyCjAlpLTn7lTbMaVYm0EqVgz6KlCa+nAmtA9qAw2KaXfn21OHChJdXFw=="
+        "contentHash": "u1WcUB9LXiySFBlN7ypafd07MIPctvsgtFFTgFJXAwN6gvYa9Lt5QYINSyB2itEKfZYSE4Ax8j1g1tLloN/v1w=="
       },
       "UriBuilder.Fluent": {
         "type": "Direct",

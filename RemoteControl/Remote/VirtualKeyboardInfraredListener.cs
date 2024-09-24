@@ -13,7 +13,6 @@ public class VirtualKeyboardInfraredListener(ILogger<VirtualKeyboardInfraredList
 
     private IKeyboardMouseEvents? keyboardShortcuts;
 
-    /// <inheritdoc />
     public void listen() {
         if (keyboardShortcuts == null) {
             keyboardShortcuts = Hook.GlobalEvents();
@@ -48,15 +47,11 @@ public class VirtualKeyboardInfraredListener(ILogger<VirtualKeyboardInfraredList
     }
 
     private async Task<ControllableApplication?> getTargetApplication() =>
-        (await Task.WhenAll(allApplications.Select(async app => {
-            Task<bool> isPlaying  = app.isPlaying();
-            Task<bool> isPlayable = app.isPlayable();
-            return (app, isPlaying: await isPlaying, isPlayable: await isPlayable, app.isFocused, app.isRunning);
-        })))
+        (await Task.WhenAll(allApplications.Select(async app => (app, playbackState: await app.fetchPlaybackState(), app.isFocused, app.isRunning))))
         .Where(app => app.isRunning)
-        .OrderByDescending(app => app.isPlaying)
+        .OrderByDescending(app => app.playbackState.isPlaying)
         .ThenByDescending(app => app.isFocused)
-        .ThenByDescending(app => app.isPlayable)
+        .ThenByDescending(app => app.playbackState.canPlay)
         .ThenBy(app => app.app.priority)
         .Select(app => app.app)
         .FirstOrDefault();

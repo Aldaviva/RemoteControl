@@ -20,6 +20,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <!-- Unfucked.Windows aleady uses this, but unless we declare a direct dependency here, the compiler complains about a version mismatch for some reason -->
+        <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <AdditionalFiles Include="ExceptionAdjustments.txt" />
     </ItemGroup>
 
@@ -30,7 +35,7 @@
     <ItemGroup>
         <PackageReference Include="MouseKeyHook" Version="5.7.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
-        <PackageReference Include="SimWinMouse" Version="1.0.2" />
+        <PackageReference Include="SimWinKeyboard" Version="1.0.2" />
         <PackageReference Include="UriBuilder.Fluent" Version="3.0.0" />
     </ItemGroup>
 

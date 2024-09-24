@@ -1,5 +1,4 @@
-﻿using ManagedWinapi.Windows;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using RemoteControl.Caching;
 using RemoteControl.Config;
 using RemoteControl.Remote;
@@ -41,21 +40,22 @@ public class XmlHttpVlcClient: AbstractControllableApplication, Vlc {
         playlistCache = new SingletonAsyncCache<XPathNavigator?>(async () => await fetchPlaylist(), CACHE_DURATION);
     }
 
-    protected override bool isApplicationWindow(SystemWindow window) => window.ClassName == "Qt5QWindowIcon" && "vlc".Equals(window.GetProcessExecutableBasename(), StringComparison.OrdinalIgnoreCase);
+    protected override string windowClassName { get; } = "Qt5QWindowIcon";
 
-    /// <inheritdoc />
+    protected override string? processBaseName { get; } = "vlc";
+
     public override int priority { get; } = 1;
 
-    /// <inheritdoc />
     public override string name { get; } = "VLC";
 
-    /// <inheritdoc />
-    public override async Task<bool> isPlaying() => await statusCache.value() is { state: PlaybackState.PLAYING };
+    public override async Task<Applications.PlaybackState> fetchPlaybackState() {
+        Task<VlcStatus?>      status   = statusCache.value();
+        Task<XPathNavigator?> playlist = playlistCache.value();
+        return new Applications.PlaybackState(
+            isPlaying: await status is { state: PlaybackState.PLAYING },
+            canPlay: (await playlist)?.SelectSingleNode("/root/item/item[@name='Playlist']/item") != null);
+    }
 
-    /// <inheritdoc />
-    public override async Task<bool> isPlayable() => (await playlistCache.value())?.SelectSingleNode("/root/item/item[@name='Playlist']/item") != null;
-
-    /// <inheritdoc />
     public override async Task sendButtonPress(RemoteControlButton button) {
         VlcStatus? status;
         switch (button) {

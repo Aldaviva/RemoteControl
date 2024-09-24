@@ -1,5 +1,4 @@
-﻿using ManagedWinapi.Windows;
-using RemoteControl.Remote;
+﻿using RemoteControl.Remote;
 using System.Runtime.InteropServices;
 
 namespace RemoteControl.Applications.Winamp;
@@ -14,22 +13,16 @@ public partial class WinampInterProcessMessageClient: AbstractControllableApplic
     private const uint WM_USER    = 0x400;
     private const uint WM_COMMAND = 0x111;
 
-    /// <inheritdoc />
-    protected override bool isApplicationWindow(SystemWindow window) => window.ClassName == "Winamp v1.x";
-
-    /// <inheritdoc />
+    protected override string windowClassName { get; } = "Winamp v1.x";
     public override int priority { get; } = 2;
-
-    /// <inheritdoc />
     public override string name { get; } = "Winamp";
 
-    /// <inheritdoc />
-    public override Task<bool> isPlaying() => Task.FromResult(getPlaybackState() == PlaybackState.PLAYING);
+    public override Task<Applications.PlaybackState> fetchPlaybackState() {
+        return Task.FromResult(new Applications.PlaybackState(
+            isPlaying: getPlaybackState() == PlaybackState.PLAYING,
+            canPlay: appWindow?.HWnd is { } winampWindowHandle && sendMessage(winampWindowHandle, WM_USER, 0, UserMessageId.GET_PLAYLIST_TRACK_COUNT) != 0));
+    }
 
-    /// <inheritdoc />
-    public override Task<bool> isPlayable() => Task.FromResult(appWindow?.HWnd is { } winampWindowHandle && sendMessage(winampWindowHandle, WM_USER, 0, UserMessageId.GET_PLAYLIST_TRACK_COUNT) != 0);
-
-    /// <inheritdoc />
     public override Task sendButtonPress(RemoteControlButton button) {
         if (appWindow?.HWnd is { } winampWindowHandle) {
             switch (button) {

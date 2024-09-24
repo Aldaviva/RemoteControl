@@ -1,6 +1,7 @@
 ﻿using ManagedWinapi.Windows;
 using RemoteControl.Caching;
 using RemoteControl.Remote;
+using Unfucked;
 
 namespace RemoteControl.Applications;
 
@@ -15,7 +16,11 @@ public abstract class AbstractControllableApplication: ControllableApplication {
         windowCache = new SingletonCache<SystemWindow?>(() => SystemWindow.FilterToplevelWindows(isApplicationWindow).FirstOrDefault(), CACHE_DURATION);
     }
 
-    protected abstract bool isApplicationWindow(SystemWindow window);
+    protected virtual bool isApplicationWindow(SystemWindow window) =>
+        window.ClassName == windowClassName && (processBaseName is not { } exeName || exeName.Equals(window.GetProcessExecutableBasename(), StringComparison.OrdinalIgnoreCase));
+
+    protected abstract string windowClassName { get; }
+    protected virtual string? processBaseName { get; } = null;
 
     /// <inheritdoc />
     public abstract int priority { get; }
@@ -30,10 +35,7 @@ public abstract class AbstractControllableApplication: ControllableApplication {
     public bool isFocused => windowCache.value?.Enabled == true;
 
     /// <inheritdoc />
-    public abstract Task<bool> isPlaying();
-
-    /// <inheritdoc />
-    public abstract Task<bool> isPlayable();
+    public abstract Task<PlaybackState> fetchPlaybackState();
 
     /// <inheritdoc />
     public abstract Task sendButtonPress(RemoteControlButton button);

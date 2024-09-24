@@ -12,9 +12,10 @@ public interface ControllableApplication {
     string name { get; }
 
     bool isRunning { get; }
+
     bool isFocused { get; }
-    Task<bool> isPlaying();
-    Task<bool> isPlayable();
+
+    Task<PlaybackState> fetchPlaybackState();
 
     Task sendButtonPress(RemoteControlButton button);
 

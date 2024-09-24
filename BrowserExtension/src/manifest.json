@@ -1,0 +1,28 @@
+{
+	"name": "Remote Control",
+	"description": "Control Vivaldi with the infrared remote control from a Marantz AV receiver.",
+	"version": "0.0.0",
+	"manifest_version": 3,
+	"author": "Ben Hutchison",
+	"homepage_url": "https://github.com/Aldaviva/RemoteControl",
+	"background": {
+		"service_worker": "background.js"
+	},
+	"content_scripts": [
+		{
+			"matches": ["https://www.youtube.com/*"],
+			"js": ["common.js", "youtube.js"]
+		}, {
+			"matches": ["https://www.twitch.tv/*"],
+			"js": ["common.js", "twitch.js"]
+		}
+	],
+	"host_permissions": ["http://localhost:4772/*"],
+	"icons": {
+		"48": "images/48.png",
+		"32": "images/32.png",
+		"24": "images/24.png",
+		"16": "images/16.png"
+	},
+	"minimum_chrome_version": "116"
+}
