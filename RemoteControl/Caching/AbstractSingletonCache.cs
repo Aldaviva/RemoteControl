@@ -15,11 +15,15 @@ public abstract class AbstractSingletonCache<T>(TimeSpan cacheDurationAfterWrite
         timeSinceLastCacheWrite.Restart();
     }
 
-    protected bool isStale => cacheDurationAfterWrite != default && timeSinceLastCacheWrite.Elapsed > cacheDurationAfterWrite;
+    protected bool isStale => !timeSinceLastCacheWrite.IsRunning || (cacheDurationAfterWrite != default && timeSinceLastCacheWrite.Elapsed > cacheDurationAfterWrite);
+
+    public void clear() {
+        timeSinceLastCacheWrite.Stop();
+    }
 
     /// <inheritdoc />
     public void Dispose() {
-        timeSinceLastCacheWrite.Stop();
+        mutex.Dispose();
         GC.SuppressFinalize(this);
     }
 

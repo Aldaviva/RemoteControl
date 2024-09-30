@@ -2,12 +2,12 @@
 
 namespace RemoteControl.Applications;
 
-public interface ControllableApplication {
+public interface ControllableApplication: IDisposable {
 
     /// <summary>
-    /// Lower numbers are higher priority
+    /// Lower numbers are higher priority (more important)
     /// </summary>
-    int priority { get; }
+    ApplicationPriority priority { get; }
 
     string name { get; }
 

@@ -2,6 +2,7 @@
 using RemoteControl.Caching;
 using RemoteControl.Config;
 using RemoteControl.Remote;
+using SimWinInput;
 using System.Xml.XPath;
 using Unfucked;
 
@@ -23,10 +24,11 @@ public interface Vlc: ControllableApplication;
  * Source:        https://code.videolan.org/videolan/vlc/-/blob/master/share/lua/http/requests/status.xml
  *                https://code.videolan.org/videolan/vlc/-/blob/master/share/lua/intf/modules/httprequests.lua
  */
-public class XmlHttpVlcClient: AbstractControllableApplication, Vlc {
+public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
 
     private readonly HttpClient                           httpClient;
     private readonly IOptions<VlcConfiguration>           config;
+    private readonly ILogger<VlcXmlHttpClient>            logger;
     private readonly Uri                                  statusUrl;
     private readonly Uri                                  playlistUrl;
     private readonly SingletonAsyncCache<VlcStatus?>      statusCache;
@@ -34,12 +36,13 @@ public class XmlHttpVlcClient: AbstractControllableApplication, Vlc {
 
     protected override string windowClassName { get; } = "Qt5QWindowIcon";
     protected override string? processBaseName { get; } = "vlc";
-    public override int priority { get; } = 1;
+    public override ApplicationPriority priority { get; } = ApplicationPriority.VLC;
     public override string name { get; } = "VLC";
 
-    public XmlHttpVlcClient(HttpClient httpClient, IOptions<VlcConfiguration> config) {
+    public VlcXmlHttpClient(HttpClient httpClient, IOptions<VlcConfiguration> config, ILogger<VlcXmlHttpClient> logger) {
         this.httpClient = httpClient;
         this.config     = config;
+        this.logger     = logger;
 
         Uri baseUri = new UriBuilder("http", "localhost", config.Value.port, "/requests/").Uri;
         statusUrl     = new Uri(baseUri, "status.xml");
@@ -57,47 +60,52 @@ public class XmlHttpVlcClient: AbstractControllableApplication, Vlc {
     }
 
     public override async Task sendButtonPress(RemoteControlButton button) {
-        VlcStatus? status;
         switch (button) {
             case RemoteControlButton.PLAY_PAUSE:
                 await sendCommand("pl_pause");
+                statusCache.clear();
                 break;
             case RemoteControlButton.PREVIOUS_TRACK:
-                status = await statusCache.value();
-                if (status is { playbackState: VlcPlaybackState.STOPPED or VlcPlaybackState.STOPPING }) {
-                    await sendCommand("pl_previous");
-                } else {
-                    await seek(false);
-                }
+                await seekOrChangeTrack(false);
                 break;
             case RemoteControlButton.NEXT_TRACK:
-                status = await statusCache.value();
-                if (status is { playbackState: VlcPlaybackState.STOPPED or VlcPlaybackState.STOPPING }) {
-                    await sendCommand("pl_next");
-                } else {
-                    await seek(true);
-                }
+                await seekOrChangeTrack(true);
                 break;
             case RemoteControlButton.STOP:
                 await sendCommand("pl_stop");
+                statusCache.clear();
                 break;
             case RemoteControlButton.MEMORY:
                 await sendCommand("fullscreen");
+                statusCache.clear();
+                break;
+            case RemoteControlButton.BAND:
+                SimKeyboard.Press((byte) Keys.T);
                 break;
             default:
                 break;
         }
     }
 
-    private async Task seek(bool forwards) {
-        await sendCommand("seek", "val", $"{(forwards ? '+' : '-')}{config.Value.jumpDurationSec:D}s");
+    private async Task seekOrChangeTrack(bool forwards) {
+        if (await statusCache.value() is { playbackState: VlcPlaybackState.STOPPED or VlcPlaybackState.STOPPING }) {
+            await sendCommand(forwards ? "pl_next" : "pl_previous");
+        } else {
+            // positive sign is required to make it a relative seek instead of absolute
+            await sendCommand("seek", "val", $"{(forwards ? '+' : '-')}{config.Value.jumpDurationSec:D}s");
+        }
+        statusCache.clear();
     }
 
     private async Task<VlcStatus?> fetchStatus() {
         try {
             using HttpResponseMessage response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, statusUrl), HttpCompletionOption.ResponseHeadersRead);
             return await readStatusResponse(response);
-        } catch (TaskCanceledException) { } catch (HttpRequestException) { }
+        } catch (TaskCanceledException e) {
+            logger.LogWarning(e, "Request to fetch VLC status timed out");
+        } catch (HttpRequestException e) {
+            logger.LogWarning(e, "Request to fetch VLC status failed");
+        }
         return null;
     }
 
@@ -107,25 +115,45 @@ public class XmlHttpVlcClient: AbstractControllableApplication, Vlc {
             if (response.IsSuccessStatusCode) {
                 return await response.Content.ReadXPathFromXmlAsync();
             }
-        } catch (TaskCanceledException) { } catch (HttpRequestException) { }
+        } catch (TaskCanceledException e) {
+            logger.LogWarning(e, "Request to fetch VLC playlist timed out");
+        } catch (HttpRequestException e) {
+            logger.LogWarning(e, "Request to fetch VLC playlist failed");
+        }
         return null;
     }
 
-    private Task sendCommand(string command, string parameterName, string parameterValue) {
-        return sendCommand(command, [new KeyValuePair<string, string>(parameterName, parameterValue)]);
-    }
+    private Task sendCommand(string command, string parameterName, string parameterValue) => sendCommand(command, [new KeyValuePair<string, string>(parameterName, parameterValue)]);
 
     private async Task sendCommand(string command, IEnumerable<KeyValuePair<string, string>>? parameters = null) {
         try {
             using HttpResponseMessage response = await httpClient.GetAsync(new UriBuilder(statusUrl)
                 .WithParameter("command", command)
                 .WithParameter(parameters ?? [])
-                .Uri); // do I need to call .ToEscapeString() instead?
-        } catch (TaskCanceledException) { } catch (HttpRequestException) { }
+                .Uri);
+        } catch (TaskCanceledException e) {
+            logger.LogWarning(e, "Command {command} to VLC timed out", command);
+        } catch (HttpRequestException e) {
+            logger.LogWarning(e, "Command {command} to VLC failed", command);
+        }
     }
 
-    private static async Task<VlcStatus?> readStatusResponse(HttpResponseMessage response) {
-        return response.IsSuccessStatusCode ? await response.Content.ReadObjectFromXmlAsync<VlcStatus>() : null;
+    private async Task<VlcStatus?> readStatusResponse(HttpResponseMessage response) {
+        if (response.IsSuccessStatusCode) {
+            return await response.Content.ReadObjectFromXmlAsync<VlcStatus>();
+        } else {
+            logger.LogWarning("Response from VLC had unsuccessful status code {status}", response.StatusCode);
+            return null;
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing) {
+        if (disposing) {
+            statusCache.Dispose();
+            playlistCache.Dispose();
+        }
+        base.Dispose(disposing);
     }
 
 }

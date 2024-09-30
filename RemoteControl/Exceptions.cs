@@ -22,12 +22,12 @@ public sealed class UnmappedBrowserExtensionException(string name, JsonDocument 
 
 public class UnsupportedWebsite: BrowserExtensionException {
 
-    public Uri url { get; init; }
+    public Uri url { get; init; } = null!;
 
 }
 
 public class UnsupportedCommand: BrowserExtensionException {
 
-    public string name { get; init; }
+    public string name { get; init; } = null!;
 
 }

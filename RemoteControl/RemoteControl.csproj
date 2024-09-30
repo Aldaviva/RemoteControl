@@ -15,40 +15,27 @@
         <RollForward>latestMajor</RollForward>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-        <ApplicationIcon>rc052sr.ico</ApplicationIcon>
+        <ApplicationIcon>play.ico</ApplicationIcon>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
-    <ItemGroup>
-        <!-- Unfucked.Windows aleady uses this, but unless we declare a direct dependency here, the compiler complains about a version mismatch for some reason -->
-        <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
-    </ItemGroup>
-    
     <ItemGroup>
         <AdditionalFiles Include="ExceptionAdjustments.txt" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="rc052sr.ico" />
+        <Content Include="play.ico" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="MouseKeyHook" Version="5.7.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
         <PackageReference Include="SimWinKeyboard" Version="1.0.2" />
+        <PackageReference Include="System.Text.Json" Version="8.0.4" /> <!-- Pinned transitive dependency to latest version to solve security vulnerability -->
         <PackageReference Include="UriBuilder.Fluent" Version="3.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="Unfucked">
-            <HintPath>..\..\Unfucked\Unfucked\bin\Debug\net8.0\Unfucked.dll</HintPath>
-        </Reference>
-        <Reference Include="Unfucked.DI">
-            <HintPath>..\..\Unfucked\DI\bin\Debug\net6.0\Unfucked.DI.dll</HintPath>
-        </Reference>
-        <Reference Include="Unfucked.Windows">
-            <HintPath>..\..\Unfucked\Windows\bin\Debug\net6.0-windows\Unfucked.Windows.dll</HintPath>
-        </Reference>
+        <PackageReference Include="Unfucked" Version="0.0.0-beta3" />
+        <PackageReference Include="Unfucked.DI" Version="0.0.0-beta2" />
+        <PackageReference Include="Unfucked.Windows" Version="0.0.0-beta3" />
     </ItemGroup>
 
 </Project>

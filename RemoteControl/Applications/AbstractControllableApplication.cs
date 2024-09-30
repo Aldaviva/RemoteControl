@@ -7,13 +7,14 @@ namespace RemoteControl.Applications;
 
 public abstract class AbstractControllableApplication: ControllableApplication {
 
-    protected static readonly TimeSpan CACHE_DURATION = TimeSpan.FromSeconds(1);
+    protected static readonly TimeSpan CACHE_DURATION = TimeSpan.FromSeconds(2);
 
+    private readonly SingletonCache<SystemWindow>  foregroundWindow = SingletonCache<SystemWindow>.create(() => SystemWindow.ForegroundWindow, CACHE_DURATION);
     private readonly SingletonCache<SystemWindow?> windowCache;
     protected SystemWindow? appWindow => windowCache.value;
 
     protected AbstractControllableApplication() {
-        windowCache = new SingletonCache<SystemWindow?>(() => SystemWindow.FilterToplevelWindows(isApplicationWindow).FirstOrDefault(), CACHE_DURATION);
+        windowCache = SingletonCache<SystemWindow?>.create(() => SystemWindow.FilterToplevelWindows(isApplicationWindow).FirstOrDefault(), CACHE_DURATION);
     }
 
     protected virtual bool isApplicationWindow(SystemWindow window) =>
@@ -23,7 +24,7 @@ public abstract class AbstractControllableApplication: ControllableApplication {
     protected virtual string? processBaseName { get; } = null;
 
     /// <inheritdoc />
-    public abstract int priority { get; }
+    public abstract ApplicationPriority priority { get; }
 
     /// <inheritdoc />
     public abstract string name { get; }
@@ -32,12 +33,24 @@ public abstract class AbstractControllableApplication: ControllableApplication {
     public bool isRunning => windowCache.value?.ClassName != null;
 
     /// <inheritdoc />
-    public bool isFocused => windowCache.value?.Enabled == true;
+    public bool isFocused => windowCache.value == foregroundWindow.value;
 
     /// <inheritdoc />
     public abstract Task<PlaybackState> fetchPlaybackState();
 
     /// <inheritdoc />
     public abstract Task sendButtonPress(RemoteControlButton button);
+
+    protected virtual void Dispose(bool disposing) {
+        if (disposing) {
+            windowCache.Dispose();
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose() {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
 }

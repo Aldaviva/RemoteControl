@@ -27,7 +27,7 @@ builder.Services
         return new HttpClient(new SocketsHttpHandler {
                 PreAuthenticate = true,
                 Credentials = new CredentialCache {
-                    { "localhost", vlcConfig.port, "Basic", new NetworkCredential(null, vlcConfig.password) }
+                    { new UriBuilder("http", "localhost", vlcConfig.port).Uri, "Basic", new NetworkCredential(string.Empty, vlcConfig.password) },
                 }
             })
             { Timeout = TimeSpan.FromMilliseconds(vlcConfig.timeoutMs) };
@@ -35,11 +35,17 @@ builder.Services
     .AddSingleton<WebSocketDispatcher, WebSocketStackDispatcher>()
     .AddSingleton<InfraredListener, VirtualKeyboardInfraredListener>()
     .AddSingleton<ControllableApplication, WinampInterProcessMessageClient>()
-    .AddSingleton<ControllableApplication, XmlHttpVlcClient>()
-    .AddSingleton<ControllableApplication, WebSocketExtensionVivaldiClient>();
+    .AddSingleton<ControllableApplication, VlcXmlHttpClient>()
+    .AddSingleton<ControllableApplication, VivaldiWebSocketExtensionClient>();
 
 await using WebApplication webapp = builder.Build();
-webapp.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(20), AllowedOrigins = { "chrome-extension://cfigdmahkckgdbefgnabphhjifcajjij" } });
+
+WebSocketOptions webSocketOptions = new() { KeepAliveInterval = TimeSpan.FromSeconds(20), AllowedOrigins = { "chrome-extension://cfigdmahkckgdbefgnabphhjifcajjij" } };
+if (webapp.Environment.IsDevelopment()) {
+    webSocketOptions.AllowedOrigins.Clear();
+}
+webapp.UseWebSockets(webSocketOptions);
+
 webapp.Services.GetRequiredService<InfraredListener>().listen();
 
 CancellationToken applicationStopping = webapp.Lifetime.ApplicationStopping;
@@ -49,7 +55,9 @@ webapp.Use(async (req, next) => {
             using WebSocket webSocket    = await req.WebSockets.AcceptWebSocketAsync();
             Task            disconnected = req.RequestServices.GetRequiredService<WebSocketDispatcher>().onConnection(webSocket);
 
-            await Task.WhenAny(disconnected, CancellationTokenSource.CreateLinkedTokenSource(req.RequestAborted, applicationStopping).Token.Wait());
+            try {
+                await Task.WhenAny(disconnected, CancellationTokenSource.CreateLinkedTokenSource(req.RequestAborted, applicationStopping).Token.Wait());
+            } catch (TaskCanceledException) { }
         } else {
             req.Response.StatusCode = StatusCodes.Status400BadRequest;
         }

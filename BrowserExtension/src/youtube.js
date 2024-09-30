@@ -6,12 +6,12 @@ class YouTubeHandler extends AbstractSiteHandler {
 		return "YOUTUBE";
 	}
 
-	get #player() {
+	get player() {
 		return document.querySelector("ytd-player.ytd-watch-flexy")?.player_;
 	}
 
 	fetchPlaybackState() {
-		const playerStateObject = this.#player?.getPlayerStateObject();
+		const playerStateObject = this.player?.getPlayerStateObject();
 		return {
 			isPlaying: playerStateObject?.isOrWillBePlaying ?? false,
 			canPlay: (playerStateObject?.isOrWillBePlaying || playerStateObject?.isPaused) ?? false
@@ -19,7 +19,7 @@ class YouTubeHandler extends AbstractSiteHandler {
 	}
 
 	pressButton(button) {
-		const player = this.#player;
+		const player = this.player;
 		if (player) {
 			switch (button) {
 				case "PLAY_PAUSE":
@@ -38,17 +38,15 @@ class YouTubeHandler extends AbstractSiteHandler {
 				case "STOP":
 					player.pauseVideo();
 					break;
-				case "BAND":
-					// unbound
-					break;
 				case "MEMORY":
-					// player.toggleFullscreen();
-					document.activeElement?.blur();
+					this.blurPage();
 					// server will then send an "F" keystroke to Vivaldi, putting the video in fullscreen, since it requires an authentic mouse or keyboard input, and not a synthetic click like our extension can create
 					break;
 				default:
 					break;
 			}
+		} else {
+			console.warn("Could not find player object");
 		}
 	}
 

@@ -23,11 +23,3 @@ public enum UserMessageId: uint {
     RESTART_WINAMP
 
 }
-
-public enum PlaybackState: uint {
-
-    STOPPED,
-    PLAYING,
-    PAUSED = 3
-
-}

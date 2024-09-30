@@ -5,11 +5,11 @@ namespace RemoteControl.Applications.Vivaldi;
 
 public interface Vivaldi: ControllableApplication;
 
-public class WebSocketExtensionVivaldiClient(WebSocketDispatcher webSocketDispatcher, ILogger<WebSocketExtensionVivaldiClient> logger): AbstractControllableApplication, Vivaldi {
+public class VivaldiWebSocketExtensionClient(WebSocketDispatcher webSocketDispatcher, ILogger<VivaldiWebSocketExtensionClient> logger): AbstractControllableApplication, Vivaldi {
 
     protected override string windowClassName { get; } = "Chrome_WidgetWin_1";
     protected override string? processBaseName { get; } = "vivaldi";
-    public override int priority { get; } = 3;
+    public override ApplicationPriority priority { get; } = ApplicationPriority.VIVALDI;
     public override string name { get; } = "Vivaldi";
 
     public override async Task<PlaybackState> fetchPlaybackState() {
@@ -29,12 +29,17 @@ public class WebSocketExtensionVivaldiClient(WebSocketDispatcher webSocketDispat
         try {
             Website website = (await webSocketDispatcher.sendCommandToMostRecentActiveConnection(new PressButton(button))).website;
 
-            if (button == RemoteControlButton.MEMORY && isFocused) {
-                Keys? fullscreenKey = website is Website.YOUTUBE or Website.TWITCH or Website.CBC or Website.VIMEO ? Keys.F : null;
+            if (button == RemoteControlButton.MEMORY) {
+                if (isFocused) {
+                    Keys? fullscreenKey = website is Website.YOUTUBE or Website.TWITCH or Website.CBC or Website.VIMEO ? Keys.F : null;
 
-                if (fullscreenKey != null) {
-                    // content script has already blurred the page, so this key press shouldn't go into a text box
-                    SimKeyboard.Press((byte) fullscreenKey);
+                    if (fullscreenKey != null) {
+                        // content script has already blurred the page, so this key press shouldn't go into a text box
+                        SimKeyboard.Press((byte) fullscreenKey);
+                        logger.LogDebug("Sent {key} to foreground window", fullscreenKey);
+                    }
+                } else {
+                    logger.LogDebug("Vivaldi was not focused, not pressing key to enter fullscreen");
                 }
             }
         } catch (UnsupportedWebsite e) {

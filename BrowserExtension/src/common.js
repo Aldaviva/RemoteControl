@@ -2,24 +2,32 @@ console.log("Starting common.js");
 
 class AbstractSiteHandler {
 
-	static jumpDurationMs = 5000;
-
 	start() {
-		chrome.runtime.onMessage.addListener(this.#onMessageFromServiceWorker);
+		window.addEventListener("message", event => {
+			// console.trace("Received event", event);
+			if (event.data.requestId && !("exception" in event.data)) {
+				const request = event.data;
+				console.debug("Received request from service worker via proxy", request);
+				const response = this.#handleCommand(request);
+				console.debug("Sending response back to service worker via proxy", response);
+				window.postMessage(response);
+			}
+		}, false);
 	}
 
-	#onMessageFromServiceWorker(request, sender, sendResponse) {
-		console.debug("Received message from service worker", request, sender);
-
+	#handleCommand(request) {
 		let response = {
-			exception: null
+			exception: null,
+			requestId: request.requestId
 		};
 
 		switch (request.name) {
 			case "FetchPlaybackState":
+				console.debug("Fetching playback state");
 				response.playbackState = this.fetchPlaybackState();
 				break;
 			case "PressButton":
+				console.info(`Pressing ${request.button} button`);
 				this.pressButton(request.button);
 				response.website = this.websiteName;
 				break;
@@ -29,7 +37,7 @@ class AbstractSiteHandler {
 				break;
 		}
 
-		sendResponse(response);
+		return response;
 	}
 
 	fetchPlaybackState() {
@@ -42,6 +50,14 @@ class AbstractSiteHandler {
 
 	get websiteName() {
 		return null;
+	}
+
+	get jumpDurationMs() {
+		return 5000;
+	}
+
+	blurPage() {
+		document.activeElement?.blur();
 	}
 
 }

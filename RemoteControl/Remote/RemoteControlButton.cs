@@ -7,6 +7,8 @@ public enum RemoteControlButton {
     NEXT_TRACK,
     STOP,
     BAND,
-    MEMORY
+    MEMORY,
+    CHANNEL_UP,
+    CHANNEL_DOWN
 
 }

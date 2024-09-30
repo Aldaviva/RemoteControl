@@ -4,14 +4,14 @@ namespace RemoteControl.Applications.Vivaldi;
 
 public abstract class BrowserCommand<RESPONSE> where RESPONSE: BrowserResponse {
 
-    internal ulong requestId { get; set; }
+    public ulong requestId { get; internal set; }
     public abstract string name { get; }
 
 }
 
 public interface BrowserResponse {
 
-    internal ulong requestId { get; init; }
+    public ulong requestId { get; init; }
     internal string? exception { get; init; }
 
 }

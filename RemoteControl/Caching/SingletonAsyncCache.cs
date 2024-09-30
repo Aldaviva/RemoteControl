@@ -1,6 +1,12 @@
 ﻿namespace RemoteControl.Caching;
 
-public class SingletonAsyncCache<T>(Func<ValueTask<T?>> generator, TimeSpan cacheDurationAfterWrite = default): AbstractSingletonCache<T>(cacheDurationAfterWrite) {
+public class SingletonAsyncCache<T>: AbstractSingletonCache<T> {
+
+    private readonly Func<ValueTask<T?>> generator;
+
+    internal SingletonAsyncCache(Func<ValueTask<T?>> generator, TimeSpan cacheDurationAfterWrite = default): base(cacheDurationAfterWrite) {
+        this.generator = generator;
+    }
 
     public async Task<T?> value() {
         await mutex.WaitAsync();

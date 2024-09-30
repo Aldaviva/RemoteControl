@@ -14,16 +14,24 @@ function connect() {
 		console.debug("WebSocket received message", event);
 
 		let request;
+		let response = { exception: null };
+
 		try {
 			request = JSON.parse(event.data);
+			console.debug(`Handling ${request.name} command from server`);
 		} catch(e) {
 			console.error("Error processing server request", e);
 			return;
 		}
 
-		console.debug(`Handling ${request.name} command from server`);
-
-		const response = await sendMessageToActivePage(request);
+		const isPressButtonRequest = request.name === "PressButton";
+		const isChannelUpButtonRequest = isPressButtonRequest && request.button === "CHANNEL_UP";
+		if (isPressButtonRequest && (isChannelUpButtonRequest || request.button === "CHANNEL_DOWN")) {
+			console.info(`Pressing ${request.button} button`);
+			await changeChannel(isChannelUpButtonRequest);
+		} else {
+			response = await sendMessageToActivePage(request);
+		}
 
 		response.requestId = request.requestId;
 		webSocket.send(JSON.stringify(response));
@@ -31,23 +39,43 @@ function connect() {
 	};
 
 	webSocket.onclose = event => {
+		webSocket = null;
 		console.info("WebSocket closed, reconnecting...");
 		setTimeout(connect, 1000);
 	};
 }
 
-async function sendMessageToActivePage(command){
+setInterval(() => webSocket?.send("\"ping\""), 20*1000); // extension is killed after 30 seconds of no WebSocket messages
+
+async function sendMessageToActivePage(command) {
 	const [activeTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-	try {
-		const response = await chrome.tabs.sendMessage(activeTab.id, command);
-		// TODO not sure what tabs.sendMessage returns if there was no listener in the content script, the documentation is too vague. it says the callback is called with no arguments, but I'm using the promise, not the callback. does it just return null or undefined? or does it reject the promise, requiring a try/catch block around the caller?
-		if (response) {
-			return response;
+	// console.debug("Active tab:", activeTab);
+
+	if (activeTab) {
+		try {
+			const response = await chrome.tabs.sendMessage(activeTab.id, command);
+			if (response) {
+				return response;
+			} else {
+				console.warn("Active tab responded to our message with", response);
+			}
+		} catch(e) {
+			console.warn("Active tab threw", e);
 		}
-	} catch(e) {}
+	}
+
+	console.error("runtime.lastError = ", chrome.runtime.lastError);
 
 	return {
 		exception: "UnsupportedWebsite",
-		url: activeTab.url
+		url: activeTab?.url ?? null
 	};
+}
+
+async function changeChannel(isUp) {
+	const currentWindowTabs = (await chrome.windows.getCurrent({ populate: true })).tabs;
+	const oldActiveTabIndex = currentWindowTabs.findIndex(tab => tab.active);
+	const newActiveTabIndex = (oldActiveTabIndex + (isUp ? 1 : -1)) % currentWindowTabs.length;
+	const newActiveTab = currentWindowTabs[newActiveTabIndex];
+	await chrome.tabs.update(newActiveTab.id, { active: true });
 }
