@@ -1,5 +1,7 @@
 console.log("Starting background.js");
 
+chrome.runtime.onStartup.addListener(() => console.log("Browser started"));
+
 let webSocket;
 connect();
 
