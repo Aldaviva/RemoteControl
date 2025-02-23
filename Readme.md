@@ -24,7 +24,7 @@ If you have an AV or audio receiver or amplifier, you probably have a remote con
 - Infrared remote control
     - Tested with the [RC052SR](https://images.crutchfieldonline.com/ImageHandler/trim/3000/1950/products/2023/34/642/g642STR70SB-o_other2-1.jpg) from a [Marantz Stereo 70s](https://www.marantz.com/en-us/product/system-products/stereo-70s/300789.html)
     - You can use any IR remote, because you train the IR receiver on the unique IR pulse patterns of your individual remote
-- [Flirc USB](https://flirc.tv/products/flirc-usb-receiver) infrared receiver ([Amazon](https://www.amazon.com/gp/product/B01NBRBWS6/))
+- [Flirc USB](https://flirc.tv/products/flirc-usb-receiver) infrared receiver ([Amazon](https://www.amazon.com/gp/product/B01NBRBWS6/), [Vilros](https://vilros.com/products/flirc-usb-gen2))
 - Flirc GUI program for training
     - Required during setup only, and can be uninstalled after IR training is complete
     - Download from the botton of the [product page](https://flirc.tv/products/flirc-usb-receiver)
