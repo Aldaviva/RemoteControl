@@ -7,7 +7,7 @@ class TwitchHandler extends AbstractSiteHandler {
 	}
 
 	get playButton() {
-		return document.querySelectorAll(".video-player__default-player button[data-a-target='player-play-pause-button']");
+		return document.querySelector(".video-player__default-player button[data-a-target='player-play-pause-button']");
 	}
 
 	get canSeek() {

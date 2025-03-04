@@ -17,7 +17,7 @@ If you have an AV or audio receiver or amplifier, you probably have a remote con
 <!-- /MarkdownTOC -->
 
 ![Marantz remote control](.github/images/marantz-remote-sideways.webp)<br>
-![Yamaha A-S701 remote control](.github/images/yamaha-a-s701-remote-sideways.webp)
+![Yamaha A-S701 remote control](.github/images/yamaha-a-s701-remote-sideways.webp)<br>
 ![Yamaha RX-V465 remote control](.github/images/yamaha-rx-v465-remote-sideways.webp)
 
 ## Prerequisites

@@ -1,4 +1,5 @@
-﻿using RemoteControl.Remote;
+﻿using ManagedWinapi.Windows;
+using RemoteControl.Remote;
 using SimWinInput;
 
 namespace RemoteControl.Applications.Vivaldi;
@@ -8,7 +9,7 @@ public interface Vivaldi: ControllableApplication;
 public class VivaldiWebSocketExtensionClient(WebSocketDispatcher webSocketDispatcher, ILogger<VivaldiWebSocketExtensionClient> logger): AbstractControllableApplication, Vivaldi {
 
     protected override string windowClassName { get; } = "Chrome_WidgetWin_1";
-    protected override string? processBaseName { get; } = "vivaldi";
+    protected override string? executableFilename { get; } = "vivaldi.exe";
     public override ApplicationPriority priority { get; } = ApplicationPriority.VIVALDI;
     public override string name { get; } = "Vivaldi";
 
@@ -27,20 +28,27 @@ public class VivaldiWebSocketExtensionClient(WebSocketDispatcher webSocketDispat
 
     public override async Task sendButtonPress(RemoteControlButton button) {
         try {
-            Website website = (await webSocketDispatcher.sendCommandToMostRecentActiveConnection(new PressButton(button))).website;
+            ButtonPressed response = await webSocketDispatcher.sendCommandToMostRecentActiveConnection(new PressButton(button));
 
-            if (button == RemoteControlButton.MEMORY) {
-                if (isFocused) {
-                    Keys? fullscreenKey = website is Website.YOUTUBE or Website.TWITCH or Website.CBC or Website.VIMEO ? Keys.F : null;
+            switch (button) {
+                case RemoteControlButton.PLAY_PAUSE when !isFullscreen:
+                    unminimize();
+                    break;
+                case RemoteControlButton.MEMORY:
+                    if (isFocused) {
+                        Keys? fullscreenKey = response.website is Website.YOUTUBE or Website.TWITCH or Website.CBC or Website.VIMEO ? Keys.F : null;
 
-                    if (fullscreenKey != null) {
-                        // content script has already blurred the page, so this key press shouldn't go into a text box
-                        SimKeyboard.Press((byte) fullscreenKey);
-                        logger.LogDebug("Sent {key} to foreground window", fullscreenKey);
+                        if (fullscreenKey != null) {
+                            // content script has already blurred the page, so this key press shouldn't go into a text box
+                            SimKeyboard.Press((byte) fullscreenKey);
+                            logger.LogDebug("Sent {key} to foreground window", fullscreenKey);
+                        }
+                    } else {
+                        logger.LogDebug("Vivaldi was not focused, not pressing key to enter fullscreen");
                     }
-                } else {
-                    logger.LogDebug("Vivaldi was not focused, not pressing key to enter fullscreen");
-                }
+                    break;
+                default:
+                    break;
             }
         } catch (UnsupportedWebsite e) {
             logger.LogInformation("Browser extension does not support pressing the {button} button on {url}", button, e.url);
@@ -50,6 +58,8 @@ public class VivaldiWebSocketExtensionClient(WebSocketDispatcher webSocketDispat
             handleBrowserExtensionException(e);
         }
     }
+
+    private bool isFullscreen => (appWindow?.ExtendedStyle & WindowExStyleFlags.WINDOWEDGE) == 0;
 
     private void handleBrowserExtensionException(BrowserExtensionException ex) {
         try {

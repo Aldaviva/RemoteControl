@@ -1,5 +1,6 @@
 console.log("Starting background.js");
 
+// Starts the extension when the browser starts by registering any listener to the runtime.onStartup event.
 chrome.runtime.onStartup.addListener(() => console.log("Browser started"));
 
 let webSocket;

@@ -1,5 +1,6 @@
 ﻿using Gma.System.MouseKeyHook;
 using RemoteControl.Applications;
+using RemoteControl.Applications.Winamp;
 using SimWinInput;
 
 namespace RemoteControl.Remote;
@@ -55,6 +56,8 @@ public class VirtualKeyboardInfraredListener(ILogger<VirtualKeyboardInfraredList
             } catch (Exception e) when (e is not OutOfMemoryException) {
                 logger.LogError(e, "Uncaught exception while sending {button} to {app}", button, targetApplication.name);
             }
+        } else if (button == RemoteControlButton.PLAY_PAUSE) {
+            allApplications.OfType<Winamp>().FirstOrDefault()?.launch();
         } else {
             logger.LogDebug("No running application to send {button} to, ignoring it", button);
         }
@@ -76,7 +79,6 @@ public class VirtualKeyboardInfraredListener(ILogger<VirtualKeyboardInfraredList
         .First()
         .app;
 
-    /// <inheritdoc />
     public void Dispose() {
         if (keyboardShortcuts != null) {
             keyboardShortcuts.KeyDown -= onKeyDown;

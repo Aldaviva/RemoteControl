@@ -4,9 +4,7 @@ namespace RemoteControl.Applications;
 
 public interface ControllableApplication: IDisposable {
 
-    /// <summary>
-    /// Lower numbers are higher priority (more important)
-    /// </summary>
+    /// <inheritdoc cref="ApplicationPriority" />
     ApplicationPriority priority { get; }
 
     string name { get; }
@@ -18,5 +16,7 @@ public interface ControllableApplication: IDisposable {
     Task<PlaybackState> fetchPlaybackState();
 
     Task sendButtonPress(RemoteControlButton button);
+
+    bool launch();
 
 }

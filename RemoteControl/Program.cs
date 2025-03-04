@@ -9,6 +9,7 @@ using RemoteControl.Remote;
 using System.Net;
 using System.Net.WebSockets;
 using Unfucked;
+using Unfucked.HTTP;
 
 Application.EnableVisualStyles();
 Application.SetCompatibleTextRenderingDefault(false);
@@ -22,9 +23,9 @@ builder.Logging.AddUnfuckedConsole();
 
 builder.Services
     .Configure<VlcConfiguration>(builder.Configuration.GetSection("vlc"))
-    .AddSingleton(context => {
+    .AddSingleton<HttpClient>(context => {
         VlcConfiguration vlcConfig = context.GetRequiredService<IOptions<VlcConfiguration>>().Value;
-        return new HttpClient(new SocketsHttpHandler {
+        return new UnfuckedHttpClient(new SocketsHttpHandler {
                 PreAuthenticate = true,
                 Credentials = new CredentialCache {
                     { new UriBuilder("http", "localhost", vlcConfig.port).Uri, "Basic", new NetworkCredential(string.Empty, vlcConfig.password) },

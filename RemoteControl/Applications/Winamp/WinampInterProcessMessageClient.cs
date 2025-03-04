@@ -1,4 +1,5 @@
-﻿using RemoteControl.Remote;
+﻿using ManagedWinapi.Windows;
+using RemoteControl.Remote;
 using System.Runtime.InteropServices;
 
 namespace RemoteControl.Applications.Winamp;
@@ -14,8 +15,11 @@ public partial class WinampInterProcessMessageClient(ILogger<WinampInterProcessM
     private const uint WM_COMMAND = 0x111;
 
     protected override string windowClassName { get; } = "Winamp v1.x";
+    protected override string executableFilename { get; } = "winamp.exe";
     public override ApplicationPriority priority { get; } = ApplicationPriority.WINAMP;
     public override string name { get; } = "Winamp";
+
+    protected override bool isApplicationWindow(SystemWindow window) => window.ClassName == windowClassName; // class check is unique enough, we don't need to look up the process too
 
     public override Task<PlaybackState> fetchPlaybackState() => Task.FromResult(new PlaybackState(
         isPlaying: getPlaybackState() == WinampPlaybackState.PLAYING,
@@ -45,14 +49,8 @@ public partial class WinampInterProcessMessageClient(ILogger<WinampInterProcessM
         return Task.CompletedTask;
     }
 
-    private WinampPlaybackState getPlaybackState() {
-        if (appWindow?.HWnd is { } winampWindowHandle) {
-            WinampPlaybackState playbackState = (WinampPlaybackState) sendUserMessage(winampWindowHandle, UserMessageId.GET_PLAYBACK_STATE, 0);
-            return Enum.IsDefined(playbackState) ? playbackState : WinampPlaybackState.STOPPED;
-        } else {
-            return WinampPlaybackState.STOPPED;
-        }
-    }
+    private WinampPlaybackState getPlaybackState() => appWindow?.HWnd is { } winampWindowHandle ? (WinampPlaybackState) sendUserMessage(winampWindowHandle, UserMessageId.GET_PLAYBACK_STATE, 0)
+        : WinampPlaybackState.STOPPED;
 
     private int sendUserMessage(IntPtr windowHandle, UserMessageId message, uint data) {
         int response = sendMessage(windowHandle, WM_USER, data, (uint) message);

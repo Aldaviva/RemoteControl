@@ -3,8 +3,11 @@ using RemoteControl.Caching;
 using RemoteControl.Config;
 using RemoteControl.Remote;
 using SimWinInput;
+using System.Net.Sockets;
 using System.Xml.XPath;
+using ThrottleDebounce;
 using Unfucked;
+using Unfucked.HTTP;
 
 namespace RemoteControl.Applications.Vlc;
 
@@ -26,27 +29,25 @@ public interface Vlc: ControllableApplication;
  */
 public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
 
-    private readonly HttpClient                           httpClient;
+    private const uint MAX_ATTEMPTS = 5;
+
     private readonly IOptions<VlcConfiguration>           config;
     private readonly ILogger<VlcXmlHttpClient>            logger;
-    private readonly Uri                                  statusUrl;
-    private readonly Uri                                  playlistUrl;
     private readonly SingletonAsyncCache<VlcStatus?>      statusCache;
     private readonly SingletonAsyncCache<XPathNavigator?> playlistCache;
 
     protected override string windowClassName { get; } = "Qt5QWindowIcon";
-    protected override string? processBaseName { get; } = "vlc";
+    protected override string? executableFilename { get; } = "vlc.exe";
     public override ApplicationPriority priority { get; } = ApplicationPriority.VLC;
     public override string name { get; } = "VLC";
 
-    public VlcXmlHttpClient(HttpClient httpClient, IOptions<VlcConfiguration> config, ILogger<VlcXmlHttpClient> logger) {
-        this.httpClient = httpClient;
-        this.config     = config;
-        this.logger     = logger;
+    private readonly IWebTarget vlcApi;
 
-        Uri baseUri = new UriBuilder("http", "localhost", config.Value.port, "/requests/").Uri;
-        statusUrl     = new Uri(baseUri, "status.xml");
-        playlistUrl   = new Uri(baseUri, "playlist.xml");
+    public VlcXmlHttpClient(HttpClient httpClient, IOptions<VlcConfiguration> config, ILogger<VlcXmlHttpClient> logger) {
+        this.config = config;
+        this.logger = logger;
+
+        vlcApi        = httpClient.Target(new UrlBuilder("http", "localhost", config.Value.port).Path("requests"));
         statusCache   = new SingletonAsyncCache<VlcStatus?>(async () => await fetchStatus(), CACHE_DURATION);
         playlistCache = new SingletonAsyncCache<XPathNavigator?>(async () => await fetchPlaylist(), CACHE_DURATION);
     }
@@ -63,13 +64,16 @@ public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
         switch (button) {
             case RemoteControlButton.PLAY_PAUSE:
                 await sendCommand("pl_pause");
+                unminimize();
                 statusCache.clear();
                 break;
             case RemoteControlButton.PREVIOUS_TRACK:
                 await seekOrChangeTrack(false);
+                // status cache is cleared by seekOrChangeTrack
                 break;
             case RemoteControlButton.NEXT_TRACK:
                 await seekOrChangeTrack(true);
+                // status cache is cleared by seekOrChangeTrack
                 break;
             case RemoteControlButton.STOP:
                 await sendCommand("pl_stop");
@@ -99,10 +103,11 @@ public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
 
     private async Task<VlcStatus?> fetchStatus() {
         try {
-            using HttpResponseMessage response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, statusUrl), HttpCompletionOption.ResponseHeadersRead);
-            return await readStatusResponse(response);
-        } catch (TaskCanceledException e) {
-            logger.LogWarning(e, "Request to fetch VLC status timed out");
+            return await Retrier.Attempt(async _ => await vlcApi.Path("status.xml").Get<VlcStatus>(), MAX_ATTEMPTS, retryDelay, shouldRetry);
+        } catch (TaskCanceledException) {
+            logger.LogWarning("Request to fetch VLC status timed out");
+        } catch (HttpRequestException e) when (isConnectionReset(e)) {
+            logger.LogWarning("Request to fetch VLC status had its connection reset");
         } catch (HttpRequestException e) {
             logger.LogWarning(e, "Request to fetch VLC status failed");
         }
@@ -111,12 +116,11 @@ public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
 
     private async Task<XPathNavigator?> fetchPlaylist() {
         try {
-            using HttpResponseMessage response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, playlistUrl), HttpCompletionOption.ResponseHeadersRead);
-            if (response.IsSuccessStatusCode) {
-                return await response.Content.ReadXPathFromXmlAsync();
-            }
-        } catch (TaskCanceledException e) {
-            logger.LogWarning(e, "Request to fetch VLC playlist timed out");
+            return await Retrier.Attempt(async _ => await vlcApi.Path("playlist.xml").Get<XPathNavigator>(), MAX_ATTEMPTS, retryDelay, shouldRetry);
+        } catch (TaskCanceledException) {
+            logger.LogWarning("Request to fetch VLC playlist timed out");
+        } catch (HttpRequestException e) when (isConnectionReset(e)) {
+            logger.LogWarning("Request to fetch VLC playlist had its connection reset");
         } catch (HttpRequestException e) {
             logger.LogWarning(e, "Request to fetch VLC playlist failed");
         }
@@ -127,27 +131,24 @@ public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
 
     private async Task sendCommand(string command, IEnumerable<KeyValuePair<string, string>>? parameters = null) {
         try {
-            using HttpResponseMessage response = await httpClient.GetAsync(new UriBuilder(statusUrl)
-                .WithParameter("command", command)
-                .WithParameter(parameters ?? [])
-                .Uri);
-        } catch (TaskCanceledException e) {
-            logger.LogWarning(e, "Command {command} to VLC timed out", command);
+            await Retrier.Attempt(async _ => (await vlcApi.Path("status.xml").QueryParam("command", command).QueryParam(parameters ?? []).Get()).Dispose(), MAX_ATTEMPTS, retryDelay, shouldRetry);
+        } catch (TaskCanceledException) {
+            logger.LogWarning("Command {command} to VLC timed out", command);
+        } catch (HttpRequestException e) when (isConnectionReset(e)) {
+            logger.LogWarning("Command {command} to VLC had its connection reset", command);
         } catch (HttpRequestException e) {
             logger.LogWarning(e, "Command {command} to VLC failed", command);
         }
     }
 
-    private async Task<VlcStatus?> readStatusResponse(HttpResponseMessage response) {
-        if (response.IsSuccessStatusCode) {
-            return await response.Content.ReadObjectFromXmlAsync<VlcStatus>();
-        } else {
-            logger.LogWarning("Response from VLC had unsuccessful status code {status}", response.StatusCode);
-            return null;
-        }
-    }
+    private static TimeSpan retryDelay(int attempt) => TimeSpan.Zero;
 
-    /// <inheritdoc />
+    private static bool shouldRetry(Exception exception) => isConnectionReset(exception);
+
+    private static bool isConnectionReset(Exception exception) => exception is HttpRequestException {
+        InnerException: IOException { InnerException: SocketException { SocketErrorCode: SocketError.ConnectionReset } }
+    };
+
     protected override void Dispose(bool disposing) {
         if (disposing) {
             statusCache.Dispose();

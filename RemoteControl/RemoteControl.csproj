@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0-windows</TargetFramework>
@@ -9,7 +9,7 @@
         <UseWindowsForms>true</UseWindowsForms>
         <Version>0.0.0</Version>
         <Authors>Ben Hutchison</Authors>
-        <Copyright>© 2024 $(Authors)</Copyright>
+        <Copyright>© 2025 $(Authors)</Copyright>
         <Company>$(Authors)</Company>
         <NoWarn>$(NoWarn);8524;NU1701</NoWarn>
         <RollForward>latestMajor</RollForward>
@@ -27,15 +27,35 @@
         <Content Include="play.ico" />
     </ItemGroup>
 
+    
     <ItemGroup>
         <PackageReference Include="MouseKeyHook" Version="5.7.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
         <PackageReference Include="SimWinKeyboard" Version="1.0.2" />
-        <PackageReference Include="System.Text.Json" Version="8.0.4" /> <!-- Pinned transitive dependency to latest version to solve security vulnerability -->
-        <PackageReference Include="UriBuilder.Fluent" Version="3.0.0" />
-        <PackageReference Include="Unfucked" Version="0.0.0-beta3" />
-        <PackageReference Include="Unfucked.DI" Version="0.0.0-beta2" />
-        <PackageReference Include="Unfucked.Windows" Version="0.0.0-beta3" />
+        <PackageReference Include="ThrottleDebounce" Version="2.0.0" />
+        <!-- <PackageReference Include="Unfucked" Version="0.0.0-beta3" /> -->
+        <!-- <PackageReference Include="Unfucked.DI" Version="0.0.0-beta2" /> -->
+        <!-- <PackageReference Include="Unfucked.Windows" Version="0.0.0-beta3" /> -->
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- prevents WindowsBase version mismatch warning, not sure if it's needed when using NuGet packages instead of filesystem DLLs -->
+        <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Reference Include="Unfucked"> 
+        <HintPath>..\..\Unfucked\Unfucked\bin\Debug\net8.0\Unfucked.dll</HintPath>
+      </Reference>
+      <Reference Include="Unfucked.DI">
+        <HintPath>..\..\Unfucked\DI\bin\Debug\net8.0\Unfucked.DI.dll</HintPath>
+      </Reference>
+      <Reference Include="Unfucked.HTTP">
+        <HintPath>..\..\Unfucked\HTTP\bin\Debug\net8.0\Unfucked.HTTP.dll</HintPath>
+      </Reference>
+      <Reference Include="Unfucked.Windows">
+        <HintPath>..\..\Unfucked\Windows\bin\Debug\net8.0-windows\Unfucked.Windows.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
