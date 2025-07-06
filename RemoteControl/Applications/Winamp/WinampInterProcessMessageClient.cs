@@ -1,4 +1,4 @@
-﻿using ManagedWinapi.Windows;
+using ManagedWinapi.Windows;
 using RemoteControl.Remote;
 using System.Runtime.InteropServices;
 
@@ -39,6 +39,12 @@ public partial class WinampInterProcessMessageClient(ILogger<WinampInterProcessM
                     break;
                 case RemoteControlButton.STOP:
                     sendCommandMessage(winampWindowHandle, CommandMessageId.STOP);
+                    break;
+                case RemoteControlButton.BAND:
+                    sendCommandMessage(winampWindowHandle, CommandMessageId.REPEAT);
+                    break;
+                case RemoteControlButton.MEMORY:
+                    sendCommandMessage(winampWindowHandle, CommandMessageId.SHUFFLE);
                     break;
                 default:
                     break;

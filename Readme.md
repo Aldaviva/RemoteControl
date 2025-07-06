@@ -93,7 +93,7 @@ reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v RemoteControl /d "
 1. Either restart the browser or reenable the browser extension, because Chromium will suspend the extension if `RemoteControl.exe` wasn't running for more than 30 seconds.
 
 ## Usage
-This is what the remote control buttons do, depending on which program is active, based on which one is playing, focused, or just running.
+This is what the remote control buttons do, depending on which program is active, playing, focused, or just running.
 <table>
     <thead><th>Remote control button</th><th>Winamp</th><th>VLC</th><th>Twitch</th><th>YouTube</th></thead>
     <tr><td>🔼 Channel Up</td><td colspan="2"><em>unused</em></td><td colspan="2">Previous tab</td></tr>
@@ -101,9 +101,9 @@ This is what the remote control buttons do, depending on which program is active
     <tr><td>⏯ Play/Pause</td><td colspan="4">Play/pause</td></tr>
     <tr><td>⏮ Previous Track</td><td>Previous track</td><td colspan="3">Seek backwards</td></tr>
     <tr><td>⏭ Next Track</td><td>Next track</td><td colspan="3">Seek forwards</td></tr>
-    <tr><td>📻 Band</td><td><em>unused</em></td><td>Show time</td><td colspan="2"><em>unused</em></td></tr>
+    <tr><td>📻 Band</td><td>Repeat</td><td>Show time</td><td colspan="2"><em>unused</em></td></tr>
     <tr><td>⏹ Stop</td><td colspan="2">Stop</td><td colspan="2">Pause</td></tr>
-    <tr><td>🧠 Memory</td><td><em>unused</em></td><td colspan="3">Toggle fullscreen</td></tr>
+    <tr><td>🧠 Memory</td><td>Shuffle</td><td colspan="3">Fullscreen</td></tr>
 </table>
 
 ## Tips

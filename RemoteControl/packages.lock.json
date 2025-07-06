@@ -19,15 +19,45 @@
       },
       "SimWinKeyboard": {
         "type": "Direct",
-        "requested": "[1.0.2, )",
-        "resolved": "1.0.2",
-        "contentHash": "u1WcUB9LXiySFBlN7ypafd07MIPctvsgtFFTgFJXAwN6gvYa9Lt5QYINSyB2itEKfZYSE4Ax8j1g1tLloN/v1w=="
+        "requested": "[1.0.3, )",
+        "resolved": "1.0.3",
+        "contentHash": "3KCgrnEhSsP9dDorWYr5srSrg4zbWfCOPmJ1kUgd9m0EQIx7ZVM1rwMPH5ghVvjvy7RxInV2OZNL8diur0qliw=="
       },
       "ThrottleDebounce": {
         "type": "Direct",
-        "requested": "[2.0.0, )",
-        "resolved": "2.0.0",
-        "contentHash": "/lt2PLUjE1bXCkPDVXXhZDzqaK3SmKwJ2EOq/a6ZbsgAWnRz3TqkqU0VyUncbh8bUIJQHCoPUxbwmjWeAbeIbw=="
+        "requested": "[3.0.0-beta5, )",
+        "resolved": "3.0.0-beta5",
+        "contentHash": "hvmR5CBGzzRAO+jJBkZuPUfXeChZRR9X2vfVLYEo7CffFV2oz4yuX9sj80GqH6oxj5KYXodJ+oGaYOtIE+H5tw=="
+      },
+      "Unfucked.DI": {
+        "type": "Direct",
+        "requested": "[0.0.1-beta.6, )",
+        "resolved": "0.0.1-beta.6",
+        "contentHash": "aPteQ2lE9jX7xGT9CtK2zUuaTrNOaNGlosD+M2qGLDsyrIEvFlO7nT/WeZ9zWHK+bdRvN1jxwSmOLTME54lH5A==",
+        "dependencies": {
+          "Unfucked": "0.0.1-beta.9"
+        }
+      },
+      "Unfucked.HTTP": {
+        "type": "Direct",
+        "requested": "[0.0.1-beta.7, )",
+        "resolved": "0.0.1-beta.7",
+        "contentHash": "s8AoAB+oaCKgmUeCrKiuLq3mO1vCIUsZ4FQ/Fg/HVFwKAT/MIgf9WRvg/ZncvZKICpZbv1ABqqerfETAkMin0A==",
+        "dependencies": {
+          "System.Text.Json": "8.0.5",
+          "Unfucked": "0.0.1-beta.9"
+        }
+      },
+      "Unfucked.Windows": {
+        "type": "Direct",
+        "requested": "[0.0.1-beta.4, )",
+        "resolved": "0.0.1-beta.4",
+        "contentHash": "px3hJerLI9i+OyoiP86Q/nH9DEL7cQlOhGNddu8yPLvZnI8sFzUEZ4U7TdS2vOWgmNfPwH3PAqFtT5KFZl826w==",
+        "dependencies": {
+          "ThrottleDebounce": "3.0.0-beta3",
+          "Unfucked": "0.0.1-beta.9",
+          "mwinapi": "0.3.0.5"
+        }
       },
       "System.CodeDom": {
         "type": "Transitive",
@@ -41,6 +71,16 @@
         "dependencies": {
           "System.CodeDom": "6.0.0"
         }
+      },
+      "System.Text.Json": {
+        "type": "Transitive",
+        "resolved": "8.0.5",
+        "contentHash": "0f1B50Ss7rqxXiaBJyzUu9bWFOO2/zSlifZ/UNMdiIpDYe4cY4LQQicP4nirK1OS31I43rn062UIJ1Q9bpmHpg=="
+      },
+      "Unfucked": {
+        "type": "Transitive",
+        "resolved": "0.0.1-beta.9",
+        "contentHash": "rwjRGKTGiwK5ZASsGFi3iKcJNMvALBlJ0HZzt7We0d8mfL0TgXpfXE+Icg97jvtJdHmH1pc446tb27LULFJKTQ=="
       }
     },
     "net8.0-windows7.0/win-x64": {

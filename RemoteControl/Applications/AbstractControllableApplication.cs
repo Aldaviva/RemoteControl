@@ -1,9 +1,10 @@
-﻿using ManagedWinapi.Windows;
+using ManagedWinapi.Windows;
 using Microsoft.Win32;
 using RemoteControl.Caching;
 using RemoteControl.Remote;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Security;
 using Unfucked;
 
 namespace RemoteControl.Applications;
@@ -42,12 +43,12 @@ public abstract class AbstractControllableApplication: ControllableApplication {
     public abstract Task sendButtonPress(RemoteControlButton button);
 
     public bool launch() {
-        if (executableFilename != null && Registry.GetValue(Path.Combine(APP_PATHS, executableFilename), string.Empty, null) is string executableAbsoluteFilename) {
-            try {
+        try {
+            if (executableFilename != null && Registry.GetValue(Path.Combine(APP_PATHS, executableFilename), string.Empty, null) is string executableAbsoluteFilename) {
                 using Process process = Process.Start(executableAbsoluteFilename);
                 return true;
-            } catch (Win32Exception) { }
-        }
+            }
+        } catch (Win32Exception) { } catch (SecurityException) { }
         return false;
     }
 
@@ -57,14 +58,14 @@ public abstract class AbstractControllableApplication: ControllableApplication {
         }
     }
 
-    protected virtual void Dispose(bool disposing) {
+    protected virtual void dispose(bool disposing) {
         if (disposing) {
             windowCache.Dispose();
         }
     }
 
     public void Dispose() {
-        Dispose(true);
+        dispose(true);
         GC.SuppressFinalize(this);
     }
 

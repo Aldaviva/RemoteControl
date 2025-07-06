@@ -1,4 +1,4 @@
-﻿using RemoteControl.Remote;
+using RemoteControl.Remote;
 
 namespace RemoteControl.Applications;
 

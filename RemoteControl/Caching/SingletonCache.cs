@@ -1,4 +1,4 @@
-﻿namespace RemoteControl.Caching;
+namespace RemoteControl.Caching;
 
 public class SingletonCache<T>: AbstractSingletonCache<T> {
 
@@ -18,14 +18,18 @@ public class SingletonCache<T>: AbstractSingletonCache<T> {
 
     public T? value {
         get {
-            mutex.Wait();
-            try {
-                if (isStale) {
-                    setValue(generator());
-                }
+            if (!isStale) {
                 return cached;
-            } finally {
-                mutex.Release();
+            } else {
+                mutex.Wait();
+                try {
+                    if (isStale) {
+                        setValue(generator());
+                    }
+                    return cached;
+                } finally {
+                    mutex.Release();
+                }
             }
         }
     }

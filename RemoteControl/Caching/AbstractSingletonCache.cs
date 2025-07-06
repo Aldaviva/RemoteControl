@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace RemoteControl.Caching;
 
@@ -15,7 +15,8 @@ public abstract class AbstractSingletonCache<T>(TimeSpan cacheDurationAfterWrite
         timeSinceLastCacheWrite.Restart();
     }
 
-    protected bool isStale => !timeSinceLastCacheWrite.IsRunning || (cacheDurationAfterWrite != default && timeSinceLastCacheWrite.Elapsed > cacheDurationAfterWrite);
+    protected bool isStale => !timeSinceLastCacheWrite.IsRunning                                                    // was cleared
+        || (cacheDurationAfterWrite != TimeSpan.Zero && timeSinceLastCacheWrite.Elapsed > cacheDurationAfterWrite); // is old
 
     public void clear() {
         timeSinceLastCacheWrite.Stop();

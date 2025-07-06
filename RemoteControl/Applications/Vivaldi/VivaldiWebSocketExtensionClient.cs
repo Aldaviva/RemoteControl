@@ -1,4 +1,4 @@
-﻿using ManagedWinapi.Windows;
+using ManagedWinapi.Windows;
 using RemoteControl.Remote;
 using SimWinInput;
 
@@ -62,14 +62,16 @@ public class VivaldiWebSocketExtensionClient(WebSocketDispatcher webSocketDispat
     private bool isFullscreen => (appWindow?.ExtendedStyle & WindowExStyleFlags.WINDOWEDGE) == 0;
 
     private void handleBrowserExtensionException(BrowserExtensionException ex) {
-        try {
-            throw ex;
-        } catch (UnsupportedCommand e) {
-            logger.LogError("Browser extension is too old to support the {cmd} command, please update it", e.name);
-        } catch (UnmappedBrowserExtensionException e) {
-            logger.LogError(e, "Browser extension returned an exception that does not map to any subclasses of {superclass}", nameof(BrowserExtensionException));
-        } catch (BrowserExtensionException e) {
-            logger.LogError(e, "Browser extension returned a {exName} exception not handled by this method", e.GetType().Name);
+        switch (ex) {
+            case UnsupportedCommand e:
+                logger.LogError("Browser extension is too old to support the {cmd} command, please update it", e.name);
+                break;
+            case UnmappedBrowserExtensionException e:
+                logger.LogError(e, "Browser extension returned an exception that does not map to any subclasses of {superclass}", nameof(BrowserExtensionException));
+                break;
+            default:
+                logger.LogError(ex, "Browser extension returned a {exName} exception not handled by this method", ex.GetType().Name);
+                break;
         }
     }
 
