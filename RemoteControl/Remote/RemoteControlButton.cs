@@ -1,4 +1,4 @@
-﻿namespace RemoteControl.Remote;
+namespace RemoteControl.Remote;
 
 public enum RemoteControlButton {
 

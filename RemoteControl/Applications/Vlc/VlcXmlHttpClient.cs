@@ -31,10 +31,10 @@ public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
 
     private static readonly RetryOptions RETRY_OPTIONS = new() { MaxAttempts = 5, IsRetryAllowed = (exception, _) => isConnectionReset(exception) };
 
-    private readonly IOptions<VlcConfiguration>           config;
-    private readonly ILogger<VlcXmlHttpClient>            logger;
-    private readonly SingletonAsyncCache<VlcStatus?>      statusCache;
-    private readonly SingletonAsyncCache<XPathNavigator?> playlistCache;
+    private readonly IOptionsMonitor<GeneralConfiguration> generalConfig;
+    private readonly ILogger<VlcXmlHttpClient>             logger;
+    private readonly SingletonAsyncCache<VlcStatus?>       statusCache;
+    private readonly SingletonAsyncCache<XPathNavigator?>  playlistCache;
 
     protected override string windowClassName { get; } = "Qt5QWindowIcon";
     protected override string? executableFilename { get; } = "vlc.exe";
@@ -43,11 +43,11 @@ public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
 
     private readonly WebTarget vlcApi;
 
-    public VlcXmlHttpClient(HttpClient httpClient, IOptions<VlcConfiguration> config, ILogger<VlcXmlHttpClient> logger) {
-        this.config = config;
-        this.logger = logger;
+    public VlcXmlHttpClient(HttpClient httpClient, IOptionsMonitor<GeneralConfiguration> generalConfig, IOptions<VlcConfiguration> vlcConfig, ILogger<VlcXmlHttpClient> logger) {
+        this.generalConfig = generalConfig;
+        this.logger        = logger;
 
-        vlcApi        = httpClient.Target(new UrlBuilder("http", "localhost", config.Value.port).Path("requests"));
+        vlcApi        = httpClient.Target(new UrlBuilder("http", "localhost", vlcConfig.Value.port).Path("requests"));
         statusCache   = new SingletonAsyncCache<VlcStatus?>(async () => await fetchStatus(), CACHE_DURATION);
         playlistCache = new SingletonAsyncCache<XPathNavigator?>(async () => await fetchPlaylist(), CACHE_DURATION);
     }
@@ -95,7 +95,7 @@ public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
         if (await statusCache.value() is { playbackState: VlcPlaybackState.STOPPED or VlcPlaybackState.STOPPING }) {
             await sendCommand(forwards ? "pl_next" : "pl_previous");
         } else {
-            int duration = (forwards ? 1 : -1) * (int) config.Value.jumpDurationSec;
+            int duration = (forwards ? 1 : -1) * (int) generalConfig.CurrentValue.jumpDurationSec;
             // positive sign is required to make it a relative seek instead of absolute
             await sendCommand("seek", "val", $"{duration:+#0;-#0}s");
         }

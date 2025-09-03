@@ -1,4 +1,4 @@
-﻿namespace RemoteControl.Applications;
+namespace RemoteControl.Applications;
 
 /// <summary>
 /// Lower numbers are higher priority (more important)

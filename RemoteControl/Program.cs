@@ -22,16 +22,18 @@ builder.Configuration.AlsoSearchForJsonFilesInExecutableDirectory();
 builder.Logging.AddUnfuckedConsole();
 
 builder.Services
+    .Configure<GeneralConfiguration>(builder.Configuration.GetSection("general"))
     .Configure<VlcConfiguration>(builder.Configuration.GetSection("vlc"))
     .AddSingleton<HttpClient>(context => {
-        VlcConfiguration vlcConfig = context.GetRequiredService<IOptions<VlcConfiguration>>().Value;
+        GeneralConfiguration generalConfig = context.GetRequiredService<IOptions<GeneralConfiguration>>().Value;
+        VlcConfiguration     vlcConfig     = context.GetRequiredService<IOptions<VlcConfiguration>>().Value;
         return new UnfuckedHttpClient(new SocketsHttpHandler {
                 PreAuthenticate = true,
                 Credentials = new CredentialCache {
                     { new UriBuilder("http", "localhost", vlcConfig.port).Uri, "Basic", new NetworkCredential(string.Empty, vlcConfig.password) },
                 }
             })
-            { Timeout = TimeSpan.FromMilliseconds(vlcConfig.timeoutMs) };
+            { Timeout = TimeSpan.FromMilliseconds(generalConfig.httpClientTimeoutMs) };
     })
     .AddSingleton<WebSocketDispatcher, WebSocketStackDispatcher>()
     .AddSingleton<InfraredListener, VirtualKeyboardInfraredListener>()

@@ -18,10 +18,10 @@ class YouTubeHandler extends AbstractSiteHandler {
 		};
 	}
 
-	pressButton(button) {
+	pressButton(request) {
 		const player = this.player;
 		if (player) {
-			switch (button) {
+			switch (request.button) {
 				case "PLAY_PAUSE":
 					if (player.getPlayerStateObject().isOrWillBePlaying) {
 						player.pauseVideo();
@@ -30,10 +30,10 @@ class YouTubeHandler extends AbstractSiteHandler {
 					}
 					break;
 				case "PREVIOUS_TRACK":
-					player.seekBy(this.jumpDurationMs/-1000);
+					player.seekBy(-1 * request.jumpDurationSec);
 					break;
 				case "NEXT_TRACK":
-					player.seekBy(this.jumpDurationMs/1000);
+					player.seekBy(request.jumpDurationSec);
 					break;
 				case "STOP":
 					player.pauseVideo();

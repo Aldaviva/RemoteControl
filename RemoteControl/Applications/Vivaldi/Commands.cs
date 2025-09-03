@@ -1,4 +1,4 @@
-﻿using RemoteControl.Remote;
+using RemoteControl.Remote;
 
 namespace RemoteControl.Applications.Vivaldi;
 
@@ -28,6 +28,12 @@ public class PressButton(RemoteControlButton button): BrowserCommand<ButtonPress
     public override string name => nameof(PressButton);
 
     public RemoteControlButton button { get; } = button;
+
+}
+
+public class PressSeekButton(bool isForwards): PressButton(isForwards ? RemoteControlButton.NEXT_TRACK : RemoteControlButton.PREVIOUS_TRACK) {
+
+    public uint jumpDurationSec { get; init; }
 
 }
 

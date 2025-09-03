@@ -1,4 +1,4 @@
-﻿namespace RemoteControl.Applications;
+namespace RemoteControl.Applications;
 
 public readonly struct PlaybackState(bool isPlaying, bool canPlay) {
 

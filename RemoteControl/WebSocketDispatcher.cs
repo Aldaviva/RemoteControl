@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.Connections;
 using RemoteControl.Applications.Vivaldi;
 using System.Collections.Concurrent;
 using System.IO.Pipelines;

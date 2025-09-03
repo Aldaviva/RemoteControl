@@ -1,4 +1,4 @@
-﻿using Gma.System.MouseKeyHook;
+using Gma.System.MouseKeyHook;
 using RemoteControl.Applications;
 using RemoteControl.Applications.Winamp;
 using SimWinInput;

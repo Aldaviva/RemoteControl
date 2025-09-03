@@ -1,4 +1,6 @@
 using ManagedWinapi.Windows;
+using Microsoft.Extensions.Options;
+using RemoteControl.Config;
 using RemoteControl.Remote;
 using SimWinInput;
 
@@ -6,7 +8,8 @@ namespace RemoteControl.Applications.Vivaldi;
 
 public interface Vivaldi: ControllableApplication;
 
-public class VivaldiWebSocketExtensionClient(WebSocketDispatcher webSocketDispatcher, ILogger<VivaldiWebSocketExtensionClient> logger): AbstractControllableApplication, Vivaldi {
+public class VivaldiWebSocketExtensionClient(WebSocketDispatcher webSocketDispatcher, IOptionsMonitor<GeneralConfiguration> config, ILogger<VivaldiWebSocketExtensionClient> logger)
+    : AbstractControllableApplication, Vivaldi {
 
     protected override string windowClassName { get; } = "Chrome_WidgetWin_1";
     protected override string? executableFilename { get; } = "vivaldi.exe";
@@ -28,7 +31,11 @@ public class VivaldiWebSocketExtensionClient(WebSocketDispatcher webSocketDispat
 
     public override async Task sendButtonPress(RemoteControlButton button) {
         try {
-            ButtonPressed response = await webSocketDispatcher.sendCommandToMostRecentActiveConnection(new PressButton(button));
+            PressButton browserCommand = button is RemoteControlButton.NEXT_TRACK or RemoteControlButton.PREVIOUS_TRACK ?
+                new PressSeekButton(button is RemoteControlButton.NEXT_TRACK) { jumpDurationSec = config.CurrentValue.jumpDurationSec } :
+                new PressButton(button);
+
+            ButtonPressed response = await webSocketDispatcher.sendCommandToMostRecentActiveConnection(browserCommand);
 
             switch (button) {
                 case RemoteControlButton.PLAY_PAUSE when !isFullscreen:

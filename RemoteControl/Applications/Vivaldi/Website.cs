@@ -1,4 +1,4 @@
-﻿namespace RemoteControl.Applications.Vivaldi;
+namespace RemoteControl.Applications.Vivaldi;
 
 public enum Website {
 

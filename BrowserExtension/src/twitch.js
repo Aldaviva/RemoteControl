@@ -22,10 +22,10 @@ class TwitchHandler extends AbstractSiteHandler {
 		};
 	}
 
-	pressButton(button) {
+	pressButton(request) {
 		const playButton = this.playButton;
 		if (playButton) {
-			switch (button) {
+			switch (request.button) {
 				case "PLAY_PAUSE":
 					playButton.click();
 					break;

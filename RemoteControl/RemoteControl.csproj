@@ -8,7 +8,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
         <UseWindowsForms>true</UseWindowsForms>
-        <Version>0.0.1</Version>
+        <Version>0.1.0</Version>
         <Authors>Ben Hutchison</Authors>
         <Copyright>© 2025 $(Authors)</Copyright>
         <Company>$(Authors)</Company>
@@ -34,8 +34,8 @@
         <PackageReference Include="SimWinKeyboard" Version="1.0.3" />
         <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta5" />
         <PackageReference Include="Unfucked.DI" Version="0.0.1-beta.6" />
-        <PackageReference Include="Unfucked.HTTP" Version="0.0.1-beta.7" />
-        <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.4" />
+        <PackageReference Include="Unfucked.HTTP" Version="0.0.1-beta.11" />
+        <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.5" />
     </ItemGroup>
 
 </Project>

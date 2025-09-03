@@ -1,4 +1,4 @@
-﻿namespace RemoteControl.Applications.Winamp;
+namespace RemoteControl.Applications.Winamp;
 
 public enum WinampPlaybackState: uint {
 

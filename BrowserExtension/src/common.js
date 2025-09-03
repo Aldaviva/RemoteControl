@@ -28,7 +28,7 @@ class AbstractSiteHandler {
 				break;
 			case "PressButton":
 				console.info(`Pressing ${request.button} button`);
-				this.pressButton(request.button);
+				this.pressButton(request);
 				response.website = this.websiteName;
 				break;
 			default:
@@ -44,16 +44,12 @@ class AbstractSiteHandler {
 		console.error("fetchPlaybackState unimplemented");
 	}
 
-	pressButton(button) {
+	pressButton(request) {
 		console.error("pressButton unimplemented");
 	}
 
 	get websiteName() {
 		return null;
-	}
-
-	get jumpDurationMs() {
-		return 4000;
 	}
 
 	blurPage() {
