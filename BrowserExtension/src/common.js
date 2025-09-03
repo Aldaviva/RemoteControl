@@ -53,7 +53,7 @@ class AbstractSiteHandler {
 	}
 
 	get jumpDurationMs() {
-		return 8000;
+		return 4000;
 	}
 
 	blurPage() {
