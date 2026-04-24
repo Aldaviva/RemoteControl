@@ -17,7 +17,7 @@ class TwitchHandler extends AbstractSiteHandler {
 	fetchPlaybackState() {
 		const playButton = this.playButton;
 		return {
-			isPlaying: playButton.dataset.aPlayerState === "playing",
+			isPlaying: playButton && playButton.dataset.aPlayerState === "playing",
 			canPlay: !!playButton
 		};
 	}
