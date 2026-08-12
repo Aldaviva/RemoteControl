@@ -22,7 +22,7 @@ If you have an AV or audio receiver or amplifier, you probably have a remote con
 
 ## Prerequisites
 - Infrared remote control
-    - Tested with the [RC052SR](https://images.crutchfieldonline.com/ImageHandler/trim/3000/1950/products/2023/34/642/g642STR70SB-o_other2-1.jpg) from a [Marantz Stereo 70s](https://www.marantz.com/en-us/product/system-products/stereo-70s/300789.html)
+    - Tested with the [RC052SR](https://images.crutchfieldonline.com/ImageHandler/trim/3000/1950/products/2023/34/642/g642STR70SB-o_other2-1.jpg) from a [Marantz Stereo 70s](https://www.marantz.com/en-us/product/system-products/stereo-70s/300789.html) and the RAS14 from a [Yamaha A-S701](https://usa.yamaha.com/products/audio_visual/hifi_components/a-s701/index.html)
     - You can use any IR remote, because you train the IR receiver on the unique IR pulse patterns of your individual remote
 - [Flirc USB](https://flirc.tv/products/flirc-usb-receiver) infrared receiver ([Amazon](https://www.amazon.com/gp/product/B01NBRBWS6/), [Vilros](https://vilros.com/products/flirc-usb-gen2))
 - Flirc GUI program for training
@@ -95,13 +95,13 @@ reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v RemoteControl /d "
 ## Usage
 This is what the remote control buttons do, depending on which program is active, playing, focused, or just running.
 <table>
-    <thead><th>Remote control button</th><th>Winamp</th><th>VLC</th><th>Twitch</th><th>YouTube</th></thead>
+    <thead><th>Remote control button</th><th>Winamp</th><th>VLC</th><th>YouTube</th><th>Twitch</th></thead>
     <tr><td>🔼 Channel Up</td><td colspan="2"><em>unused</em></td><td colspan="2">Previous tab</td></tr>
     <tr><td>🔽 Channel Down</td><td colspan="2"><em>unused</em></td><td colspan="2">Next tab</td></tr>
     <tr><td>⏯ Play/Pause</td><td colspan="4">Play/pause</td></tr>
     <tr><td>⏮ Previous Track</td><td>Previous track</td><td colspan="3">Seek backwards</td></tr>
     <tr><td>⏭ Next Track</td><td>Next track</td><td colspan="3">Seek forwards</td></tr>
-    <tr><td>📻 Band</td><td>Repeat</td><td>Show time</td><td colspan="2"><em>unused</em></td></tr>
+    <tr><td>📻 Band</td><td>Repeat</td><td  colspan="2">Show time</td><td><em>unused</em></td></tr>
     <tr><td>⏹ Stop</td><td colspan="2">Stop</td><td colspan="2">Pause</td></tr>
     <tr><td>🧠 Memory</td><td>Shuffle</td><td colspan="3">Fullscreen</td></tr>
 </table>

@@ -1,7 +1,7 @@
 {
 	"name": "Remote Control",
-	"description": "Control Vivaldi with the infrared remote control from a Marantz AV receiver.",
-	"version": "0.1.0",
+	"description": "Control YouTube and Twitch using any infrared remote.",
+	"version": "0.1.1",
 	"manifest_version": 3,
 	"author": "Ben Hutchison",
 	"homepage_url": "https://github.com/Aldaviva/RemoteControl",

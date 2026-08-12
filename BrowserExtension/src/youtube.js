@@ -42,6 +42,9 @@ class YouTubeHandler extends AbstractSiteHandler {
 					this.blurPage();
 					// server will then send an "F" keystroke to Vivaldi, putting the video in fullscreen, since it requires an authentic mouse or keyboard input, and not a synthetic click like our extension can create
 					break;
+				case "BAND":
+					player.wakeUpControls();
+					break;
 				default:
 					break;
 			}

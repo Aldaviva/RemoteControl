@@ -8,9 +8,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
         <UseWindowsForms>true</UseWindowsForms>
-        <Version>0.1.0</Version>
+        <Version>0.1.1</Version>
         <Authors>Ben Hutchison</Authors>
-        <Copyright>© 2025 $(Authors)</Copyright>
+        <Copyright>© 2026 $(Authors)</Copyright>
         <Company>$(Authors)</Company>
         <NoWarn>$(NoWarn);8524;NU1701</NoWarn>
         <RollForward>latestMajor</RollForward>
