@@ -26,7 +26,7 @@ public partial class WinampInterProcessMessageClient(ILogger<WinampInterProcessM
         canPlay: appWindow?.HWnd is { } winampWindowHandle && sendUserMessage(winampWindowHandle, UserMessageId.GET_PLAYLIST_TRACK_COUNT, 0) != 0));
 
     public override Task sendButtonPress(RemoteControlButton button) {
-        if (appWindow?.HWnd is { } winampWindowHandle) {
+        if (appWindow?.HWnd is {} winampWindowHandle) {
             switch (button) {
                 case RemoteControlButton.PLAY_PAUSE:
                     sendCommandMessage(winampWindowHandle, getPlaybackState() == WinampPlaybackState.STOPPED ? CommandMessageId.PLAY : CommandMessageId.PAUSE);
@@ -41,10 +41,10 @@ public partial class WinampInterProcessMessageClient(ILogger<WinampInterProcessM
                     sendCommandMessage(winampWindowHandle, CommandMessageId.STOP);
                     break;
                 case RemoteControlButton.BAND:
-                    sendCommandMessage(winampWindowHandle, CommandMessageId.REPEAT);
+                    sendCommandMessage(winampWindowHandle, CommandMessageId.SHUFFLE);
                     break;
                 case RemoteControlButton.MEMORY:
-                    sendCommandMessage(winampWindowHandle, CommandMessageId.SHUFFLE);
+                    sendCommandMessage(winampWindowHandle, CommandMessageId.REPEAT);
                     break;
                 default:
                     break;

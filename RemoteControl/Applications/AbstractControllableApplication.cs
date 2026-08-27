@@ -24,7 +24,7 @@ public abstract class AbstractControllableApplication: ControllableApplication {
     }
 
     protected virtual bool isApplicationWindow(SystemWindow window) => window.ClassName == windowClassName
-        && (executableFilename is not { } exeName || Path.GetFileNameWithoutExtension(exeName).Equals(window.GetProcessExecutableBasename(), StringComparison.OrdinalIgnoreCase));
+        && (executableFilename is not {} exeName || Path.GetFileNameWithoutExtension(exeName).Equals(window.ProcessExecutableBasename, StringComparison.OrdinalIgnoreCase));
 
     protected abstract string windowClassName { get; }
 

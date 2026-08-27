@@ -30,12 +30,12 @@
 
     <ItemGroup>
         <PackageReference Include="MouseKeyHook" Version="5.7.1" />
-        <PackageReference Include="mwinapi" Version="0.3.0.5" />
-        <PackageReference Include="SimWinKeyboard" Version="1.0.3" />
-        <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta5" />
-        <PackageReference Include="Unfucked.DI" Version="0.0.1-beta.6" />
-        <PackageReference Include="Unfucked.HTTP" Version="0.0.1-beta.11" />
-        <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.5" />
+        <PackageReference Include="mwinapi" Version="0.3.0.6" />
+        <PackageReference Include="SimWinKeyboard" Version="1.2.1" />
+        <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta6" />
+        <PackageReference Include="Unfucked.DI" Version="0.0.1-beta.19" />
+        <PackageReference Include="Unfucked.HTTP" Version="0.0.1-beta.33" />
+        <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.11" />
     </ItemGroup>
 
 </Project>

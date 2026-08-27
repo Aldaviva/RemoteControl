@@ -41,7 +41,7 @@ public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
     public override ApplicationPriority priority { get; } = ApplicationPriority.VLC;
     public override string name { get; } = "VLC";
 
-    private readonly WebTarget vlcApi;
+    private readonly IWebTarget vlcApi;
 
     public VlcXmlHttpClient(HttpClient httpClient, IOptionsMonitor<GeneralConfiguration> generalConfig, IOptions<VlcConfiguration> vlcConfig, ILogger<VlcXmlHttpClient> logger) {
         this.generalConfig = generalConfig;
@@ -128,9 +128,9 @@ public class VlcXmlHttpClient: AbstractControllableApplication, Vlc {
         return null;
     }
 
-    private Task sendCommand(string command, string parameterName, string parameterValue) => sendCommand(command, [new KeyValuePair<string, string?>(parameterName, parameterValue)]);
+    private Task sendCommand(string command, string parameterName, string parameterValue) => sendCommand(command, [new KeyValuePair<string, string>(parameterName, parameterValue)]);
 
-    private async Task sendCommand(string command, IEnumerable<KeyValuePair<string, string?>>? parameters = null) {
+    private async Task sendCommand(string command, IEnumerable<KeyValuePair<string, string>>? parameters = null) {
         try {
             await Retrier.Attempt(async _ => (await vlcApi.Path("status.xml").QueryParam("command", command).QueryParam(parameters ?? []).Get()).Dispose(), RETRY_OPTIONS);
         } catch (TaskCanceledException) {

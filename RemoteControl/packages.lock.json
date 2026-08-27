@@ -10,54 +10,61 @@
       },
       "mwinapi": {
         "type": "Direct",
-        "requested": "[0.3.0.5, )",
-        "resolved": "0.3.0.5",
-        "contentHash": "jb1ox29TMcxe0klNF5yui+ehXHUdEZOuykYaoGI9Okt0s7K5bNWxOzqsng0VVVvvFnW9wNfS4hWYOsE9Xup0GQ==",
+        "requested": "[0.3.0.6, )",
+        "resolved": "0.3.0.6",
+        "contentHash": "ifbh/zHTsN+hrT2kBE4he8+Bq9DS/9b8tA0aVIdJCOK3Y4O0hdFtZSiQHpJX1YkH4/JMmF0V5hHQDahS5i9U1g==",
         "dependencies": {
           "System.Management": "6.0.0"
         }
       },
       "SimWinKeyboard": {
         "type": "Direct",
-        "requested": "[1.0.3, )",
-        "resolved": "1.0.3",
-        "contentHash": "3KCgrnEhSsP9dDorWYr5srSrg4zbWfCOPmJ1kUgd9m0EQIx7ZVM1rwMPH5ghVvjvy7RxInV2OZNL8diur0qliw=="
+        "requested": "[1.2.1, )",
+        "resolved": "1.2.1",
+        "contentHash": "v1KIpNVil3u4wg4amiJGWL3TicKOwbCIl2I5How4qeZo6KuSmmR63KeN0aNNz2hPBbCDwdLX+66BrrHcCvxwRg=="
       },
       "ThrottleDebounce": {
         "type": "Direct",
-        "requested": "[3.0.0-beta5, )",
-        "resolved": "3.0.0-beta5",
-        "contentHash": "hvmR5CBGzzRAO+jJBkZuPUfXeChZRR9X2vfVLYEo7CffFV2oz4yuX9sj80GqH6oxj5KYXodJ+oGaYOtIE+H5tw=="
+        "requested": "[3.0.0-beta6, )",
+        "resolved": "3.0.0-beta6",
+        "contentHash": "hLr071LwvbfwNvjsnEb5FP7BNnmu4qG6++ZHAdVEaLCv01BQ9m3G1PLKv/C8DPJ9hFcs+3EUNh+c9/Lg459HIw==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        }
       },
       "Unfucked.DI": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.6, )",
-        "resolved": "0.0.1-beta.6",
-        "contentHash": "Vlk1zw2aJRpbBEkpq1fwn5p5qwDIFIbaXfEOP5WlPzXp0HQKCkFGCG35pmeLMHzJuO71dbFAhNValQsb2/7rCA==",
+        "requested": "[0.0.1-beta.19, )",
+        "resolved": "0.0.1-beta.19",
+        "contentHash": "PedFzjJgx2qTiwzX963dEwbnUigd2IhBtit4OH7OwBiqqiD9Ohva9TkE3xB7WzEl6IsYHKLAVz8SJB4DCtd60g==",
         "dependencies": {
-          "Unfucked": "0.0.1-beta.5"
+          "Unfucked": "0.0.1-beta.50"
         }
       },
       "Unfucked.HTTP": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.11, )",
-        "resolved": "0.0.1-beta.11",
-        "contentHash": "EvZ+TvpGvfIQ7rdkhIfrD582RqFy4791EDCi40aOMlsB+GdQEUwGNlFKvkMRBD1z7ELrXHVnUTEWz4xScjCnJg==",
+        "requested": "[0.0.1-beta.33, )",
+        "resolved": "0.0.1-beta.33",
+        "contentHash": "EhS1b26NamzYMzq+hy67jvWYXxm1EM2Bw6zojABZG664UWkOPfg1mz8F13Usm7iDhSvaaGxzAIrpa5Vau/PRRg==",
         "dependencies": {
-          "System.Text.Json": "8.0.6",
-          "Unfucked": "0.0.1-beta.10"
+          "Unfucked": "0.0.1-beta.50"
         }
       },
       "Unfucked.Windows": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.5, )",
-        "resolved": "0.0.1-beta.5",
-        "contentHash": "ywiO7EUXzacJvicTEOKqD4skEGJawVdYAJvzmQvOkM55BdK/o4APoqI49171PmA4TJhzcExbNmN+gr1kfIVigw==",
+        "requested": "[0.0.1-beta.11, )",
+        "resolved": "0.0.1-beta.11",
+        "contentHash": "lb6D6VI8pFcuP9Y71jsGNIsZGJLU77aRyj5nmkC2HRDBDaMqAvYkX7zuOfWDnBBPcw30Qcs/FuhRneJejBLS7Q==",
         "dependencies": {
-          "ThrottleDebounce": "3.0.0-beta5",
-          "Unfucked": "0.0.1-beta.9",
-          "mwinapi": "0.3.0.5"
+          "ThrottleDebounce": "3.0.0-beta6",
+          "Unfucked": "0.0.1-beta.40",
+          "mwinapi": "0.3.0.6"
         }
+      },
+      "Microsoft.CSharp": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
       },
       "System.CodeDom": {
         "type": "Transitive",
@@ -72,15 +79,10 @@
           "System.CodeDom": "6.0.0"
         }
       },
-      "System.Text.Json": {
-        "type": "Transitive",
-        "resolved": "8.0.6",
-        "contentHash": "BvSpVBsVN9b+Y+wONbvJOHd1HjXQf33+XiC28ZMOwRsYb42mz3Q8YHnpTSwpwJLqYCMqM+0UUVC3V+pi25XfkQ=="
-      },
       "Unfucked": {
         "type": "Transitive",
-        "resolved": "0.0.1-beta.10",
-        "contentHash": "ckVfvhW8cOIslEeUFXI9hEdU4LXX/wM692KmDb1DM6qbfKJU4/kk/J3U3x3H7/7CCGMXh9MGGa10gNmHdwkABw=="
+        "resolved": "0.0.1-beta.50",
+        "contentHash": "0rMvVIhB9RNv88XdKBMRb7AVK0CHb8fk22TwFyPjQ7YXAKuQxpjGgMBIQn+TCJQx48KtFEUC5gU1lzByezhprQ=="
       }
     },
     "net8.0-windows7.0/win-x64": {

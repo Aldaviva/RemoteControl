@@ -148,7 +148,7 @@ public class WebSocketStackDispatcher(ILogger<WebSocketStackDispatcher> logger):
             OutstandingRequest outstandingRequest = OutstandingRequest.create<RESPONSE>();
             outstandingRequests[command.requestId] = outstandingRequest;
 
-            SemaphoreSlim sendLock = sendLocks.GetOrAddWithDisposal(webSocket, _ => new SemaphoreSlim(1));
+            SemaphoreSlim sendLock = sendLocks.GetOrAddWithDisposal(webSocket, _ => new SemaphoreSlim(1), out _);
             await sendLock.WaitAsync(disposing.Token);
             try {
                 await webSocket.SendAsync(serializedCommand, WebSocketMessageType.Text, WebSocketMessageFlags.EndOfMessage, disposing.Token);
