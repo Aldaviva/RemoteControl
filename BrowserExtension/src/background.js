@@ -78,7 +78,7 @@ async function sendMessageToActivePage(command) {
 async function changeChannel(isUp) {
 	const currentWindowTabs = (await chrome.windows.getCurrent({ populate: true })).tabs;
 	const oldActiveTabIndex = currentWindowTabs.findIndex(tab => tab.active);
-	const newActiveTabIndex = (oldActiveTabIndex + (isUp ? 1 : -1)) % currentWindowTabs.length;
+	const newActiveTabIndex = (oldActiveTabIndex + (isUp ? 1 : -1) + currentWindowTabs.length) % currentWindowTabs.length;
 	const newActiveTab = currentWindowTabs[newActiveTabIndex];
 	await chrome.tabs.update(newActiveTab.id, { active: true });
 }
