@@ -1,7 +1,7 @@
 {
 	"name": "Remote Control",
 	"description": "Control YouTube and Twitch using any infrared remote.",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"manifest_version": 3,
 	"author": "Ben Hutchison",
 	"homepage_url": "https://github.com/Aldaviva/RemoteControl",

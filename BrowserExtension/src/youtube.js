@@ -7,7 +7,7 @@ class YouTubeHandler extends AbstractSiteHandler {
 	}
 
 	get player() {
-		return document.querySelector("ytd-player.ytd-watch-flexy")?.player_;
+		return document.querySelector("ytd-player.ytd-watch-flexy")?.getPlayer();
 	}
 
 	fetchPlaybackState() {

@@ -8,7 +8,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>latest</LangVersion>
         <UseWindowsForms>true</UseWindowsForms>
-        <Version>0.1.2</Version>
+        <Version>0.1.3</Version>
         <Authors>Ben Hutchison</Authors>
         <Copyright>© 2026 $(Authors)</Copyright>
         <Company>$(Authors)</Company>
